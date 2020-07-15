@@ -3,17 +3,23 @@
 ## Installation
 
 ### Download Criticality
-git clone https://github.com/hengenlab/Criticality.git 
+```
+git clone https://github.com/hengenlab/criticality_hlab.git
 Enter your username and password  
+```
 
-##### Install dependencies
-List of dependencies are in install.sh.  
+### Using pip
+```
+cd locationofcriticality_hlab/criticality_hlab/  
+pip install .
+```
 
+### Adding to path
 #### Windows
 My Computer > Properties > Advanced System Settings > Environment Variables >  
 In system variables, create a new variable  
     Variable name  : PYTHONPATH  
-    Variable value : location where Criticality is located  
+    Variable value : location where criticality_hlab is located  
     Click OK  
 
 
@@ -21,16 +27,16 @@ In system variables, create a new variable
 If you are using bash shell  
 In terminal open .barshrc or .bash_profile  
 add this line  
-export PYTHONPATH=/location_of_Criticality:$PYTHONPATH  
+export PYTHONPATH=/location_of_criticality_hlab:$PYTHONPATH  
 
 
 #### Mac
 If you are using bash shell  
 In terminal cd ~/  
 then open  .profile using your favourite text editor (open -a TextEdit .profile)  
-to add location where Criticality is located add the line below  
+to add location where criticality_hlab is located add the line below  
 
-export PYTHONPATH=/location_of_Criticality:$PYTHONPATH  
+export PYTHONPATH=/location_of_criticality_hlab:$PYTHONPATH  
 
 
 
