@@ -11,8 +11,8 @@ def EXCLUDE(burst, setmin, num=1):
     dKS = 1
     xmin = 1
 
-    while KS > (np.min([num/np.sqrt(np.size(burst[burst > xmin])), 0.1])
-                and dKS > 0.0005):
+    while ((KS > np.min([num/np.sqrt(np.size(burst[burst > xmin])), 0.1]))
+                and (dKS > 0.0005)):
         alpha, xmin, ks, Loglike = tp.tplfit(burst, setmin)
         alpha = alpha[0]
         xmax = np.max(burst)
