@@ -4,7 +4,7 @@ import time
 # import sys
 
 
-def get_avalanches(data, perc=0.25):
+def get_avalanches(data, perc=0.25, ncells=-1):
 
     '''
     Function that goes through an array of binned spikes and determines
@@ -25,7 +25,11 @@ def get_avalanches(data, perc=0.25):
     ttic = time.time()
 
     # num cells, num bins
-    n, m = np.shape(data)
+    if ncells == -1:
+        n, m = np.shape(data)
+    else:
+        n = ncells
+        m = np.shape(data)[0]
     print("Data has {} neurons with length {}*binsize".format(n, m))
 
     # tic = time.time()
@@ -33,7 +37,10 @@ def get_avalanches(data, perc=0.25):
         network = cdc(data)
     else:
         # collapse into single array. sum the amount of activity in each bin.
-        network = np.nansum(data, axis=0)
+        if ncells == -1:
+            network = np.nansum(data, axis=0)
+        else:
+            network = data.copy()
         print("network ", network)
         print("sh network ", network.shape)
 
