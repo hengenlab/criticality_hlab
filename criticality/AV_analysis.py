@@ -1,5 +1,6 @@
 import numpy as np
-from sahara_work import Criticality_new as cr
+from criticality import pvaluenew2 as pv
+from criticality import exclude as ex
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -16,34 +17,41 @@ params = {
 }
 
 
-def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax, beta, TT, Sm, sigma, fit_sigma, pltname, saveloc):
+def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
+                  beta, TT, Sm, sigma, fit_sigma, pltname, saveloc):
     # burst PDF
-    fig1, ax1 = plt.subplots(nrows = 1, ncols = 3, figsize = [10, 6])
-    pdf = np.histogram(burst, bins = np.arange(1, np.max(burst) + 2))[0]
-    ax1[0].plot(np.arange(1, np.max(burst) + 1), pdf / np.sum(pdf), marker = 'o', markersize = 3, linestyle = 'None', color = '#2138ab', alpha = 0.75)
+    fig1, ax1 = plt.subplots(nrows=1, ncols=3, figsize=[10, 6])
+    pdf = np.histogram(burst, bins=np.arange(1, np.max(burst) + 2))[0]
+    ax1[0].plot(np.arange(1, np.max(burst) + 1), pdf / np.sum(pdf),
+                marker='o', markersize=3, linestyle='None',
+                color='#2138ab', alpha=0.75)
     ax1[0].set_yscale('log')
     ax1[0].set_xscale('log')
 
     x = np.arange(burstMin, burstMax + 1)
-    y = (np.size(np.where(burst == burstMin)[0]) / np.power(burstMin, -alpha)) * np.power(x, -alpha)
+    y = ((np.size(np.where(burst == burstMin)[0]) /
+          np.power(burstMin, -alpha)) * np.power(x, -alpha))
     y = y / np.sum(pdf)
 
-    ax1[0].plot(x, y, color = '#c5c9c7')
+    ax1[0].plot(x, y, color='#c5c9c7')
     ax1[0].set_xlabel('AVsize')
     ax1[0].set_ylabel('PDF(D)')
     ax1[0].set_title('AVsize PDF, ' + str(np.round(alpha, 3)))
 
     # time pdf
-    tdf = np.histogram(T, bins = np.arange(1, np.max(T) + 2))[0]
-    ax1[1].plot(np.arange(1, np.max(T) + 1), tdf / np.sum(tdf), marker = 'o', markersize = 3, linestyle = 'None', color = '#7bfdc7', alpha = 0.75)
+    tdf = np.histogram(T, bins=np.arange(1, np.max(T) + 2))[0]
+    ax1[1].plot(np.arange(1, np.max(T) + 1), tdf / np.sum(tdf),
+                marker='o', markersize=3, linestyle='None',
+                color='#7bfdc7', alpha=0.75)
     ax1[1].set_yscale('log')
     ax1[1].set_xscale('log')
     sns.despine()
 
     x = np.arange(tMin, tMax + 1)
-    y = np.size(np.where(T == tMin)) / (np.power(tMin, -beta)) * np.power(x, -beta)
+    y = (np.size(np.where(T == tMin)) / (np.power(tMin, -beta)) *
+                                        np.power(x, -beta))
     y = y / np.sum(tdf)
-    ax1[1].plot(x, y, color = '#c5c9c7')
+    ax1[1].plot(x, y, color='#c5c9c7')
     ax1[1].set_xlabel('AVduration')
     ax1[1].set_ylabel('PDF(D)')
     ax1[1].set_title('AVdura PDF, ' + str(np.round(beta, 3)))
@@ -51,9 +59,12 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax, beta,
     # figure out how to plot shuffled data
 
     # scaling relation
-    ax1[2].plot(TT, ((np.power(TT, sigma) / np.power(TT[7], sigma)) * Sm[7]), label = 'pre', color = '#4b006e')
-    ax1[2].plot(TT, (np.power(TT, fit_sigma[0]) / np.power(TT[7], fit_sigma[0]) * Sm[7]), 'b', label = 'fit', linestyle = '--', color = '#826d8c')
-    ax1[2].plot(TT, Sm, 'o', color = '#fb7d07', alpha = 0.75)
+    ax1[2].plot(TT, ((np.power(TT, sigma) / np.power(TT[7], sigma)) * Sm[7]),
+                label='pre', color='#4b006e')
+    ax1[2].plot(TT, (np.power(TT, fit_sigma[0]) / np.power(TT[7],
+                     fit_sigma[0]) * Sm[7]),
+                'b', label='fit', linestyle='--', color='#826d8c')
+    ax1[2].plot(TT, Sm, 'o', color='#fb7d07', alpha=0.75)
     ax1[2].set_xscale('log')
     ax1[2].set_yscale('log')
     ax1[2].set_ylabel('<S>')
@@ -75,9 +86,14 @@ def AV_analysis(burst, T, params):
         bm = params['bm']
 
     Result = {}
-    burstMax, burstMin, alpha = cr.EXCLUDE(burst[burst < np.power(np.max(burst), .8)], bm)
-    idx_burst = np.where(np.logical_and(burst <= burstMax, burst >= burstMin))[0]
+    burstMax, burstMin, alpha = \
+        ex.EXCLUDE(burst[burst < np.power(np.max(burst), .8)], bm)
+    idx_burst = \
+        np.where(np.logical_and(burst <= burstMax, burst >= burstMin))[0]
+    # print("burst[idx_burst] ", burst[idx_burst])
+    print("idx_burst ", idx_burst)
 
+    print("alpha ", alpha)
     print("burst min: ", burstMin)
     print("burst max:", burstMax)
 
@@ -88,14 +104,16 @@ def AV_analysis(burst, T, params):
 
     if flag == 2:
         # pvalue test
-        Result['P_burst'], ks, hax_burst, ptest_bmin = cr.pvaluenew(burst[idx_burst], alpha, burstMin)
+        Result['P_burst'], ks, hax_burst, ptest_bmin = \
+            pv.pvaluenew(burst[idx_burst], alpha, burstMin)
 
     if params['tm'] is None:
         tm = int(np.max(T)/20)
     else:
         tm = params['tm']
 
-    tMax, tMin, beta = cr.EXCLUDE(T, tm)
+    print("tMax, tMin, beta = ex.EXCLUDE(T, tm)")
+    tMax, tMin, beta = ex.EXCLUDE(T, tm)
     idx_time = np.where(np.logical_and(T >= tMin, T <= tMax))[0]
 
     print(f'time min: {tMin}')
@@ -108,7 +126,8 @@ def AV_analysis(burst, T, params):
 
     if params['flag'] == 2:
         # pvalue for time
-        Result['P_t'], ks, hax_time, ptest_tmin = cr.pvaluenew(T[idx_time], beta, tMin)
+        Result['P_t'], ks, hax_time, ptest_tmin = \
+            pv.pvaluenew(T[idx_time], beta, tMin)
 
     TT = np.arange(1, np.max(T) + 1)
     Sm = []
@@ -119,7 +138,13 @@ def AV_analysis(burst, T, params):
     TT = TT[Loc]
     Sm = Sm[Loc]
 
-    fit_sigma = np.polyfit(np.log(TT[np.where(np.logical_and(TT > tMin, TT < tMin + 60))[0]]), np.log(Sm[np.where(np.logical_and(TT > tMin, TT < tMin + 60))[0]]), 1)
+    # ckbndnt
+    fit_sigma = \
+        np.polyfit(np.log(TT[np.where(np.logical_and(TT > tMin,
+                                                     TT < tMin + 60))[0]]),
+                   np.log(Sm[np.where(np.logical_and(TT > tMin,
+                                                     TT < tMin + 60))[0]]), 1)
+    print("fit_sigma ", fit_sigma)
     sigma = (beta - 1) / (alpha - 1)
 
     Result['pre'] = sigma
@@ -131,19 +156,19 @@ def AV_analysis(burst, T, params):
     if params['plot']:
         saveloc = params['saveloc']
         pltname = params['pltname']
-        fig1 = scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax, beta, TT, Sm, sigma, fit_sigma, pltname, saveloc)
+        fig1 = scaling_plots(Result, burst, burstMin, burstMax, alpha, T,
+                             tMin, tMax, beta, TT, Sm, sigma, fit_sigma,
+                             pltname, saveloc)
         if params['flag'] == 2:
-            hax_burst.axes[0].set_xlabel('Size (S)', fontsize = 16)
-            hax_burst.axes[0].set_ylabel('Prob(size < S)', fontsize = 16)
+            hax_burst.axes[0].set_xlabel('Size (S)', fontsize=16)
+            hax_burst.axes[0].set_ylabel('Prob(size < S)', fontsize=16)
             hax_burst.savefig(saveloc + "/" + pltname + 'pvalue_burst')
 
-            hax_time.axes[0].set_xlabel('Duration (D)', fontsize = 16)
-            hax_time.axes[0].set_ylabel('Prob(size < D)', fontsize = 16)
+            hax_time.axes[0].set_xlabel('Duration (D)', fontsize=16)
+            hax_time.axes[0].set_ylabel('Prob(size < D)', fontsize=16)
             hax_time.savefig(saveloc + "/" + pltname + 'pvalue_time')
             Result['burst_cdf'] = hax_burst
             Result['time_cdf'] = hax_time
         Result['scaling_relation_plot'] = fig1
 
     return Result
-
-
