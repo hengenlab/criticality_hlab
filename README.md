@@ -74,26 +74,87 @@ r = cr.get_avalanches(data, perc)
 # T_shuffle : not enabled, None
 # plot_shuffled : not enabled, None
 # plot : True
-params = {'flag': 2, 'bm': None, 'tm': None, 'pltname': "test",
+# params = {'flag': 2, 'bm': None, 'tm': None, 'pltname': "test",
+# params = {'flag': 1, 'bm': None, 'tm': None, 'pltname': "testmodel",
+params = {'flag': 1, 'bm': 10, 'tm': 2, 'pltname': "testmodel",
           'saveloc': '/hlabhome/kiranbn/git/criticality_hlab/data/',
           'burst_shuffled': None, 'T_shuffle': None,
           'plot_shuffled': False, 'plot': True}
 
 # run the code
-# Result = cr.AV_analysis(burst, T, params)
-Result = cr.AV_analysis(r['S'], r['T'], params)
+Result = cr.AV_analysis(burst, T, params, nfactor_bm=4, nfactor_tm=1,
+                        nfactor_bm_tail=0.9, nfactor_tm_tail=1.0)
 
 # check results
-if (Result['P_t'] > 0.05 and Result['P_burst'] > 0.05):
-    print('''For this example,
-          pvalues for both size and duration distributions
-          are larger than 0.05''')
-    print('''Null hypothesis could not be rejected.
-          Dataset follows power law distribution''')
-else:
-    print('''Null hypothesis could be rejected.
-          Dataset follows power law distribution''')
+if params['flag'] == 2:
+    if (Result['P_t'] > 0.05 and Result['P_burst'] > 0.05):
+        print('''For this example,
+              pvalues for both size and duration distributions
+              are larger than 0.05''')
+        print('''Null hypothesis could not be rejected.
+              Dataset follows power law distribution''')
+    else:
+        print('''Null hypothesis could be rejected.
+              Dataset follows power law distribution''')
 print("DCC ", Result['df'])
+```
+or
+```
+import criticality_hlab.criticality as cr
+import numpy as np
+import sys
+
+data = np.load('spikes_all_369000.npy')
+print("sh data ", data.shape)
+n_cells = np.load('spikes_all_369000_ncells.npy')
+print("n_cells ", n_cells)
+
+# Define variables
+# threshold : 25 % spikes
+# perc = 0.25
+
+# This goes through your data and
+# it finds all avalanches and create two arrays
+# and put them to a dict : S size, T duration
+r = cr.get_avalanches(data, perc, ncells=n_cells)
+print("r['T'] ", r['T'])
+print("r['S'] ", r['S'])
+burst = r['S']
+T = r['T']
+
+# flag 2 = pvalue and dcc, else just dcc
+# bm : None=max calulate inside code, model 10, rawdata 10-20
+# tm : None=max calulate inside code, model 4, rawdata 2-20
+# pltname : plot name
+# saveloc : Location to save plots
+# burst_shuffled : not enabled, None
+# T_shuffle : not enabled, None
+# plot_shuffled : not enabled, None
+# plot : True
+# params = {'flag': 2, 'bm': None, 'tm': None, 'pltname': "test",
+# params = {'flag': 1, 'bm': None, 'tm': None, 'pltname': "testmodel",
+params = {'flag': 1, 'bm': 10, 'tm': 2, 'pltname': "testmodel",
+          'saveloc': '/hlabhome/kiranbn/git/criticality_hlab/data/',
+          'burst_shuffled': None, 'T_shuffle': None,
+          'plot_shuffled': False, 'plot': True}
+
+# run the code
+Result = cr.AV_analysis(burst, T, params, nfactor_bm=4, nfactor_tm=1,
+                        nfactor_bm_tail=0.9, nfactor_tm_tail=1.0)
+
+# check results
+if params['flag'] == 2:
+    if (Result['P_t'] > 0.05 and Result['P_burst'] > 0.05):
+        print('''For this example,
+              pvalues for both size and duration distributions
+              are larger than 0.05''')
+        print('''Null hypothesis could not be rejected.
+              Dataset follows power law distribution''')
+    else:
+        print('''Null hypothesis could be rejected.
+              Dataset follows power law distribution''')
+print("DCC ", Result['df'])
+
 ```
 
 ## References
