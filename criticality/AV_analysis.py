@@ -77,7 +77,8 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
     return fig1
 
 
-def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0):
+def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
+                nfactor_bm_tail=0.8, nfactor_tm_tail=1.0):
     flag = params['flag']
 
     if params['bm'] is None:
@@ -87,7 +88,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0):
 
     Result = {}
     burstMax, burstMin, alpha = \
-        ex.EXCLUDE(burst[burst < np.power(np.max(burst), .8)], bm,
+        ex.EXCLUDE(burst[burst < np.power(np.max(burst), nfactor_bm_tail)], bm,
                    nfactor=nfactor_bm)
     idx_burst = \
         np.where(np.logical_and(burst <= burstMax, burst >= burstMin))[0]
@@ -114,7 +115,10 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0):
         tm = params['tm']
 
     print("tMax, tMin, beta = ex.EXCLUDE(T, tm)")
-    tMax, tMin, beta = ex.EXCLUDE(T, tm, nfactor=nfactor_tm)
+    # ckbn tMax, tMin, beta = ex.EXCLUDE(T, tm, nfactor=nfactor_tm)
+    tMax, tMin, beta = \
+        ex.EXCLUDE(T[T < np.power(np.max(T), nfactor_tm_tail)], tm,
+                   nfactor=nfactor_tm)
     idx_time = np.where(np.logical_and(T >= tMin, T <= tMax))[0]
 
     print(f'time min: {tMin}')
