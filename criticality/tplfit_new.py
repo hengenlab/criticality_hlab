@@ -4,7 +4,7 @@ import scipy.optimize
 # from scipy.stats import powerlaw
 
 
-def tplfit(burst, limit):
+def tplfit(burst, limit, nfactor=0):
     """
         this code runs a loop to determine a good minima for your data to fit
         the most ideal powerlaw, it runs from 1 to your boundary and then
@@ -24,7 +24,7 @@ def tplfit(burst, limit):
         raise RuntimeError('Error: Burst is empty, tplfit')
     xmax = np.max(burst)
 
-    for xmin in np.arange(1, limit+1):
+    for indx, xmin in enumerate(np.arange(1+nfactor, limit+1)):
         idx = np.where(np.logical_and(burst >= xmin, burst <= xmax))[0]
         n = np.size(burst[idx])
         s = np.unique(burst[idx])
@@ -45,10 +45,10 @@ def tplfit(burst, limit):
         fit = np.cumsum(A*np.power(np.arange(xmin, xmax+1), -a))
         KS.append(np.max(np.abs(cdf-fit)))
 
-    xmin = int(np.where(KS == np.min(KS))[0])
-    alpha = alpha[xmin]
-    Loglike = Loglike[xmin]
+    xmin = int(np.where(KS == np.min(KS))[0]) + nfactor
+    alpha = alpha[int(np.where(KS == np.min(KS))[0])]
+    Loglike = Loglike[int(np.where(KS == np.min(KS))[0])]
     ks = np.min(KS)
-    xmin = xmin+1
+    xmin = xmin + 1
 
     return alpha, xmin, ks, Loglike

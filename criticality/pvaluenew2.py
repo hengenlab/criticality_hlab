@@ -5,7 +5,7 @@ import scipy.stats as stats
 import seaborn as sns
 
 
-def pvaluenew(burst, alpha, xmin):
+def pvaluenew(burst, alpha, xmin, nfactor=0):
 
     '''
     '''
@@ -39,10 +39,11 @@ def pvaluenew(burst, alpha, xmin):
     j = 1
     Niter = 1000
 
+    # syn data 10 times size of original
     N = 10 * np.size(burst)
 
     while j < Niter:
-        if not j % 400:
+        if not j % 200:
             print(str(j) + " loops completed")
 
         syn_data = np.floor((xmin-1/2)*np.power((1-np.random.uniform(0, 1, N)),
@@ -56,7 +57,8 @@ def pvaluenew(burst, alpha, xmin):
         X = syn_data[idx_syn]
         # print("2 syn_data", syn_data, " xmin ", xmin)
         # calculate exponent for surrogated data
-        alpha_syn, xmin_syn, ks_syn, Loglike_syn = tp.tplfit(syn_data, xmin)
+        alpha_syn, xmin_syn, ks_syn, Loglike_syn = tp.tplfit(syn_data, xmin,
+                                                             nfactor=nfactor)
         a = alpha_syn[0]
 
         if ((np.abs(a-alpha) <= 0.1) and (a > 1.0)):

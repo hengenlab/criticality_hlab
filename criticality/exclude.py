@@ -3,7 +3,7 @@ from criticality import tplfit_new as tp
 from copy import deepcopy as cdc
 
 
-def EXCLUDE(burst, setmin, num=1):
+def EXCLUDE(burst, setmin, num=1, nfactor=0):
 
     '''
     Determine both the lower and upper boundaries with a small KS
@@ -20,7 +20,7 @@ def EXCLUDE(burst, setmin, num=1):
     print("2 ", num/np.sqrt(np.size(burst[burst > xmin])))
     while ((KS > np.min([num/np.sqrt(np.size(burst[burst > xmin])), 0.1]))
                 and (dKS > 0.0005)):
-        alpha, xmin, ks, Loglike = tp.tplfit(burst, setmin)
+        alpha, xmin, ks, Loglike = tp.tplfit(burst, setmin, nfactor=nfactor)
         alpha = alpha[0]
         xmax = np.max(burst)
 
