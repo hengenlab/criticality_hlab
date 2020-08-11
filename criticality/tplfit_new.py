@@ -40,7 +40,7 @@ def tplfit(burst, limit, nfactor=0):
         # a = scipy.optimize.fmin(func=LL, x0=2.3, disp=False)
         # es['x'], res['fun'], res['nit'], res['nfev'], res['status']
         a,_ ,_ ,_, lstatus = scipy.optimize.fmin(func=LL, x0=2.3,
-                                xtol=0.00001, ftol=0.00001, maxiter=10,
+                                xtol=0.00001, ftol=0.00001, maxiter=1000,
                                 full_output=True,
                                 disp=True)
         if (lstatus != 0):
