@@ -33,7 +33,18 @@ def tplfit(burst, limit, nfactor=0):
 
         LL = lambda x: x*np.sum(np.log(burst[idx])) -\
             n*np.log(1/np.sum(np.power(s, -x)))
-        a = scipy.optimize.fmin(func=LL, x0=2.3, disp=False)
+        #  scipy.optimize.fmin(func, x0, args=(), xtol=0.0001, ftol=0.0001,
+        #                      maxiter=None, maxfun=None, full_output=0,
+        #                      disp=1, retall=0, callback=None,
+        #                      initial_simplex=None)
+        # a = scipy.optimize.fmin(func=LL, x0=2.3, disp=False)
+        # es['x'], res['fun'], res['nit'], res['nfev'], res['status']
+        a,_ ,_ ,_, lstatus = scipy.optimize.fmin(func=LL, x0=2.3,
+                                xtol=0.00001, ftol=0.00001, maxiter=10,
+                                full_output=True,
+                                disp=True)
+        if (lstatus != 0):
+            raise RuntimeError('Error: scipy.optimize.fmin not successful')
         fval = LL(a)
         Loglike.append(-fval)
 
