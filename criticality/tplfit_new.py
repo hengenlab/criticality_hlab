@@ -39,10 +39,11 @@ def tplfit(burst, limit, nfactor=0):
         #                      initial_simplex=None)
         # a = scipy.optimize.fmin(func=LL, x0=2.3, disp=False)
         # es['x'], res['fun'], res['nit'], res['nfev'], res['status']
-        a,_ ,_ ,_, lstatus = scipy.optimize.fmin(func=LL, x0=2.3,
-                                xtol=0.00001, ftol=0.00001, maxiter=1000,
+        a,_ ,_ ,_, lstatus = scipy.optimize.fmin(func=LL, x0=1.0,
+                                xtol=0.000001, ftol=0.000001, maxiter=1000,
                                 full_output=True,
-                                disp=True)
+                                disp=False)
+        # print("a ", a)
         if (lstatus != 0):
             raise RuntimeError('Error: scipy.optimize.fmin not successful')
         fval = LL(a)
