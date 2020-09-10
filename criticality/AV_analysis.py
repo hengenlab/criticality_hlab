@@ -85,7 +85,7 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
     ax1[2].set_xscale('log')
     ax1[2].set_yscale('log')
     ax1[2].set_ylabel('<S>')
-    ax1[2].set_ylabel('Duration')
+    ax1[2].set_xlabel('Duration')
     ax1[2].set_title('Difference = ' + str(np.round(Result['df'], 3)))
 
     plt.tight_layout()
