@@ -42,7 +42,7 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
 
     ax1[0].plot(x, y, color = '#c5c9c7')
     ax1[0].set_xlabel('AVsize')
-    ax1[0].set_ylabel('PDF(D)')
+    ax1[0].set_ylabel('PDF(S)')
     ax1[0].set_title('AVsize PDF, ' + str(np.round(alpha, 3)))
 
     # time pdf
