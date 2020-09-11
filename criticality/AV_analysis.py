@@ -111,7 +111,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     idx_burst = \
         np.where(np.logical_and(burst <= burstMax, burst >= burstMin))[0]
     # print("burst[idx_burst] ", burst[idx_burst])
-    print("idx_burst ", idx_burst)
+    # print("idx_burst ", idx_burst)
 
     print("alpha ", alpha)
     print("burst min: ", burstMin)
@@ -132,7 +132,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     else:
         tm = params['tm']
 
-    print("tMax, tMin, beta = ex.EXCLUDE(T, tm)")
+    # print("tMax, tMin, beta = ex.EXCLUDE(T, tm)")
     # ckbn tMax, tMin, beta = ex.EXCLUDE(T, tm, nfactor=nfactor_tm)
     tMax, tMin, beta = \
         ex.EXCLUDE(T[T < np.power(np.max(T), nfactor_tm_tail)], tm,
