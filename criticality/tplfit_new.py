@@ -45,7 +45,8 @@ def tplfit(burst, limit, nfactor=0):
                                 disp=False)
         # print("a ", a)
         if (lstatus != 0):
-            raise RuntimeError('Error: scipy.optimize.fmin not successful')
+            raise RuntimeError('Error: scipy.optimize.fmin not successful',
+                               lstatus)
         fval = LL(a)
         Loglike.append(-fval)
 
