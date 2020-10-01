@@ -4,21 +4,21 @@ from criticality import exclude as ex
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-params = {
-    'flag': 2,
-    'bm': None,
-    'tm': None,
-    'pltname': "test",
-    'saveloc': "/media/bs001s/caf/model_stuff/5000_cells",
-    'burst_shuffled': None,
-    'T_shuffled': None,
-    'plot_shuffled': False,
-    'plot': True
-}
+# params = {
+#     'flag': 2,
+#     'bm': None,
+#     'tm': None,
+#     'pltname': "test",
+#     'saveloc': "/media/bs001s/caf/model_stuff/5000_cells",
+#     'burst_shuffled': None,
+#     'T_shuffled': None,
+#     'plot_shuffled': False,
+#     'plot': True
+# }
 
 
 def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
-                  beta, TT, Sm, sigma, fit_sigma, pltname, saveloc):
+                  beta, TT, Sm, sigma, fit_sigma, pltname, saveloc, p_val_b, p_val_t):
     # burst PDF
     burstMax = int(burstMax)
     burstMin = int(burstMin)
@@ -44,6 +44,7 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
     ax1[0].set_xlabel('AVsize')
     ax1[0].set_ylabel('PDF(S)')
     ax1[0].set_title('AVsize PDF, ' + str(np.round(alpha, 3)))
+    ax1[0].text(10, .1, f'p_val = {p_val_b}')
 
     # time pdf
     tdf = np.histogram(T, bins = np.arange(1, np.max(T) + 2))[0]
@@ -66,6 +67,8 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
     ax1[1].set_xlabel('AVduration')
     ax1[1].set_ylabel('PDF(D)')
     ax1[1].set_title('AVdura PDF, ' + str(np.round(beta, 3)))
+    ax1[1].text(10, .1, f'p_val = {p_val_t}')
+
 
     # figure out how to plot shuffled data
 
@@ -122,6 +125,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     Result['xmin'] = burstMin
     Result['xmax'] = burstMax
 
+    Result['P_burst'] = None
     if flag == 2:
         # pvalue test
         Result['P_burst'], ks, hax_burst, ptest_bmin = \
@@ -147,6 +151,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     Result['tmin'] = tMin
     Result['tmax'] = tMax
 
+    Result['P_t'] = None
     if params['flag'] == 2:
         # pvalue for time
         Result['P_t'], ks, hax_time, ptest_tmin = \
@@ -164,9 +169,9 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     # ckbndnt
     fit_sigma = \
         np.polyfit(np.log(TT[np.where(np.logical_and(TT > tMin,
-                                                     TT < tMin + 60))[0]]),
+                                                     TT < tMax))[0]]),
                    np.log(Sm[np.where(np.logical_and(TT > tMin,
-                                                     TT < tMin + 60))[0]]), 1)
+                                                     TT < tMax))[0]]), 1)
     print("fit_sigma ", fit_sigma)
     sigma = (beta - 1) / (alpha - 1)
 
@@ -181,7 +186,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
         pltname = params['pltname']
         fig1 = scaling_plots(Result, burst, burstMin, burstMax, alpha, T,
                              tMin, tMax, beta, TT, Sm, sigma, fit_sigma,
-                             pltname, saveloc)
+                             pltname, saveloc, Result['P_burst'], Result['P_t'])
         if params['flag'] == 2:
             hax_burst.axes[0].set_xlabel('Size (S)', fontsize=16)
             hax_burst.axes[0].set_ylabel('Prob(size < S)', fontsize=16)
