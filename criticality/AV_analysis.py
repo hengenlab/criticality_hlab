@@ -44,7 +44,7 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
     ax1[0].set_xlabel('AVsize')
     ax1[0].set_ylabel('PDF(S)')
     ax1[0].set_title('AVsize PDF, ' + str(np.round(alpha, 3)))
-    if p_val_b not None:
+    if p_val_b is not None:
         ax1[0].text(10, .1, f'p_val = {p_val_b}')
 
     # time pdf
@@ -68,7 +68,7 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
     ax1[1].set_xlabel('AVduration')
     ax1[1].set_ylabel('PDF(D)')
     ax1[1].set_title('AVdura PDF, ' + str(np.round(beta, 3)))
-    if p_val_t not None:
+    if p_val_t is not None:
         ax1[1].text(10, .1, f'p_val = {p_val_t}')
 
 
