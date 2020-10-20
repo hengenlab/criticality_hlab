@@ -200,5 +200,6 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
             Result['burst_cdf'] = hax_burst
             Result['time_cdf'] = hax_time
         Result['scaling_relation_plot'] = fig1
+        plt.close('all')
 
     return Result
