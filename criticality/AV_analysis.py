@@ -101,11 +101,12 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
 
 
 def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
-                nfactor_bm_tail=0.8, nfactor_tm_tail=1.0):
+                nfactor_bm_tail=0.8, nfactor_tm_tail=1.0, none_fact=40):
     flag = params['flag']
 
     if params['bm'] is None:
-        bm = int(np.max(burst)/40)
+        print('none_fact ', none_fact)
+        bm = int(np.max(burst)/none_fact)
     else:
         bm = params['bm']
 
@@ -134,7 +135,8 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
             pv.pvaluenew(burst[idx_burst], alpha, burstMin, nfactor=nfactor_bm)
 
     if params['tm'] is None:
-        tm = int(np.max(T)/40)
+        print('none_fact ', none_fact)
+        tm = int(np.max(T)/none_fact)
     else:
         tm = params['tm']
 
