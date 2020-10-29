@@ -105,7 +105,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     flag = params['flag']
 
     if params['bm'] is None:
-        bm = int(np.max(burst)/20)
+        bm = int(np.max(burst)/40)
     else:
         bm = params['bm']
 
@@ -134,7 +134,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
             pv.pvaluenew(burst[idx_burst], alpha, burstMin, nfactor=nfactor_bm)
 
     if params['tm'] is None:
-        tm = int(np.max(T)/20)
+        tm = int(np.max(T)/40)
     else:
         tm = params['tm']
 
