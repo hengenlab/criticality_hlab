@@ -121,7 +121,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
 
     print("alpha ", alpha)
     print("burst min: ", burstMin)
-    print("burst max:", burstMax)
+    print("burst max:", burstMax, flush=True)
 
     Result['burst'] = burst
     Result['alpha'] = alpha
@@ -148,7 +148,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     idx_time = np.where(np.logical_and(T >= tMin, T <= tMax))[0]
 
     print(f'time min: {tMin}')
-    print(f'time max: {tMax}')
+    print(f'time max: {tMax}', flush=True)
 
     Result['T'] = T
     Result['beta'] = beta

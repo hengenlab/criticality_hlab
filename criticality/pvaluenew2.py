@@ -44,7 +44,7 @@ def pvaluenew(burst, alpha, xmin, nfactor=0):
 
     while j < Niter:
         if not j % 200:
-            print(str(j) + " loops completed")
+            print(str(j) + " loops completed", flush=True)
 
         syn_data = np.floor((xmin-1/2)*np.power((1-np.random.uniform(0, 1, N)),
                             (1/(1-alpha))) + 1/2)

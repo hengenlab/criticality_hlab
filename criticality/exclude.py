@@ -45,6 +45,6 @@ def EXCLUDE(burst, setmin, num=1, nfactor=0):
         # print("len burst ", len(burst))
         burstMax = np.max(burst)
 
-    print("dKS Final ", dKS)
+    print("dKS Final ", dKS, flush=True)
     burstMin = xmin
     return burstMax, burstMin, alpha
