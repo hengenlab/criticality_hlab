@@ -3,9 +3,11 @@ from criticality import tplfit_new as tp
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import seaborn as sns
+import time
 
 
-def pvaluenew(burst, alpha, xmin, nfactor=0):
+def pvaluenew(burst, alpha, xmin, nfactor=0,
+              max_time=7200):
 
     '''
     '''
@@ -42,7 +44,14 @@ def pvaluenew(burst, alpha, xmin, nfactor=0):
     # syn data 10 times size of original
     N = 10 * np.size(burst)
 
+    max_time_start = time.time()
     while j < Niter:
+        # print("max_time ", max_time,
+        #       "time elapsed ", (time.time() - max_time_start), flush=True)
+        if ((time.time() - max_time_start) > max_time):
+            raise RuntimeError("Pvalue took more than max_time {} seconds".
+                               format(max_time))
+
         if not j % 200:
             print(str(j) + " loops completed", flush=True)
 

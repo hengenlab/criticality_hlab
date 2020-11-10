@@ -101,7 +101,8 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
 
 
 def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
-                nfactor_bm_tail=0.8, nfactor_tm_tail=1.0, none_fact=40):
+                nfactor_bm_tail=0.8, nfactor_tm_tail=1.0, none_fact=40,
+                max_time=7200):
     flag = params['flag']
 
     if params['bm'] is None:
@@ -132,7 +133,8 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     if flag == 2:
         # pvalue test
         Result['P_burst'], ks, hax_burst, ptest_bmin = \
-            pv.pvaluenew(burst[idx_burst], alpha, burstMin, nfactor=nfactor_bm)
+            pv.pvaluenew(burst[idx_burst], alpha, burstMin, nfactor=nfactor_bm,
+                         max_time=max_time)
 
     if params['tm'] is None:
         print('none_fact ', none_fact)
@@ -159,7 +161,8 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     if params['flag'] == 2:
         # pvalue for time
         Result['P_t'], ks, hax_time, ptest_tmin = \
-            pv.pvaluenew(T[idx_time], beta, tMin, nfactor=nfactor_tm)
+            pv.pvaluenew(T[idx_time], beta, tMin, nfactor=nfactor_tm,
+                         max_time=max_time)
 
     TT = np.arange(1, np.max(T) + 1)
     Sm = []
