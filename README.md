@@ -47,7 +47,7 @@ export PYTHONPATH=/location_of_criticality_hlab:$PYTHONPATH
 ## Test run
 
 ```
-import criticality_hlab.criticality as cr
+import criticality as cr
 import numpy as np
 
 # Load sample binary data which is already binned.
@@ -83,7 +83,8 @@ params = {'flag': 1, 'bm': 10, 'tm': 2, 'pltname': "testmodel",
 
 # run the code
 Result = cr.AV_analysis(burst, T, params, nfactor_bm=4, nfactor_tm=1,
-                        nfactor_bm_tail=0.9, nfactor_tm_tail=1.0)
+                        nfactor_bm_tail=0.9, nfactor_tm_tail=1.0,
+                        none_fact=10, max_time=600)
 
 # check results
 if params['flag'] == 2:
@@ -100,7 +101,7 @@ print("DCC ", Result['df'])
 ```
 or
 ```
-import criticality_hlab.criticality as cr
+import criticality as cr
 import numpy as np
 import sys
 
@@ -140,7 +141,8 @@ params = {'flag': 1, 'bm': 10, 'tm': 2, 'pltname': "testmodel",
 
 # run the code
 Result = cr.AV_analysis(burst, T, params, nfactor_bm=4, nfactor_tm=1,
-                        nfactor_bm_tail=0.9, nfactor_tm_tail=1.0)
+                        nfactor_bm_tail=0.9, nfactor_tm_tail=1.0,
+                        none_fact=10, max_time=600)
 
 # check results
 if params['flag'] == 2:
