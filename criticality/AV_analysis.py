@@ -149,6 +149,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
                    nfactor=nfactor_tm)
     idx_time = np.where(np.logical_and(T >= tMin, T <= tMax))[0]
 
+    print("beta ", beta)
     print(f'time min: {tMin}')
     print(f'time max: {tMax}', flush=True)
 
@@ -181,6 +182,8 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
                                                      TT < tMax))[0]]), 1)
     print("fit_sigma ", fit_sigma)
     sigma = (beta - 1) / (alpha - 1)
+    print("sigma ", sigma, flush=True)
+
 
     Result['pre'] = sigma
     Result['fit'] = fit_sigma
