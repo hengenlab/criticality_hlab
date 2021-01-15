@@ -22,7 +22,7 @@ setup(
    download_url="https://github.com/hengenlab/criticality_hlab",
    packages=['criticality'],
    install_requires=['ipython', 'numpy', 'matplotlib', 'seaborn', 'pandas',
-                     'joblib', 'scipy', 'sklearn', 'glob3', 'powerlaw'],
+                     'joblib', 'scipy', 'sklearn', 'glob2', 'powerlaw'],
    classifiers=[
         'Development Status :: 1 - Pre-Alpha',
         'Natural Language :: English',
