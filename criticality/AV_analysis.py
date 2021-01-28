@@ -102,11 +102,12 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
 
 def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
                 nfactor_bm_tail=0.8, nfactor_tm_tail=1.0, none_fact=40,
-                max_time=7200):
+                max_time=7200, verbose = True):
     flag = params['flag']
 
     if params['bm'] is None:
-        print('none_fact ', none_fact)
+        if verbose:
+            print('none_fact ', none_fact)
         bm = int(np.max(burst)/none_fact)
     else:
         bm = params['bm']
@@ -114,15 +115,15 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     Result = {}
     burstMax, burstMin, alpha = \
         ex.EXCLUDE(burst[burst < np.power(np.max(burst), nfactor_bm_tail)], bm,
-                   nfactor=nfactor_bm)
+                   nfactor=nfactor_bm, verbose = verbose)
     idx_burst = \
         np.where(np.logical_and(burst <= burstMax, burst >= burstMin))[0]
     # print("burst[idx_burst] ", burst[idx_burst])
     # print("idx_burst ", idx_burst)
-
-    print("alpha ", alpha)
-    print("burst min: ", burstMin)
-    print("burst max:", burstMax, flush=True)
+    if verbose:
+        print("alpha ", alpha)
+        print("burst min: ", burstMin)
+        print("burst max:", burstMax, flush=True)
 
     Result['burst'] = burst
     Result['alpha'] = alpha
@@ -134,10 +135,11 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
         # pvalue test
         Result['P_burst'], ks, hax_burst, ptest_bmin = \
             pv.pvaluenew(burst[idx_burst], alpha, burstMin, nfactor=nfactor_bm,
-                         max_time=max_time)
+                         max_time=max_time, verbose = verbose)
 
     if params['tm'] is None:
-        print('none_fact ', none_fact)
+        if verbose:
+            print('none_fact ', none_fact)
         tm = int(np.max(T)/none_fact)
     else:
         tm = params['tm']
@@ -146,12 +148,13 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     # ckbn tMax, tMin, beta = ex.EXCLUDE(T, tm, nfactor=nfactor_tm)
     tMax, tMin, beta = \
         ex.EXCLUDE(T[T < np.power(np.max(T), nfactor_tm_tail)], tm,
-                   nfactor=nfactor_tm)
+                   nfactor=nfactor_tm, verbose = verbose)
     idx_time = np.where(np.logical_and(T >= tMin, T <= tMax))[0]
 
-    print("beta ", beta)
-    print(f'time min: {tMin}')
-    print(f'time max: {tMax}', flush=True)
+    if verbose:
+        print("beta ", beta)
+        print(f'time min: {tMin}')
+        print(f'time max: {tMax}', flush=True)
 
     Result['T'] = T
     Result['beta'] = beta
@@ -163,7 +166,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
         # pvalue for time
         Result['P_t'], ks, hax_time, ptest_tmin = \
             pv.pvaluenew(T[idx_time], beta, tMin, nfactor=nfactor_tm,
-                         max_time=max_time)
+                         max_time=max_time, verbose=verbose)
 
     TT = np.arange(1, np.max(T) + 1)
     Sm = []
@@ -180,9 +183,10 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
                                                      TT < tMax))[0]]),
                    np.log(Sm[np.where(np.logical_and(TT > tMin,
                                                      TT < tMax))[0]]), 1)
-    print("fit_sigma ", fit_sigma)
     sigma = (beta - 1) / (alpha - 1)
-    print("sigma ", sigma, flush=True)
+    if verbose:
+        print("fit_sigma ", fit_sigma)
+        print("sigma ", sigma, flush=True)
 
 
     Result['pre'] = sigma

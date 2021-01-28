@@ -7,7 +7,7 @@ import time
 
 
 def pvaluenew(burst, alpha, xmin, nfactor=0,
-              max_time=7200):
+              max_time=7200, verbose = True):
 
     '''
     '''
@@ -53,7 +53,8 @@ def pvaluenew(burst, alpha, xmin, nfactor=0,
                                format(max_time))
 
         if not j % 200:
-            print(str(j) + " loops completed", flush=True)
+            if verbose:
+                print(str(j) + " loops completed", flush=True)
 
         syn_data = np.floor((xmin-1/2)*np.power((1-np.random.uniform(0, 1, N)),
                             (1/(1-alpha))) + 1/2)
@@ -85,7 +86,8 @@ def pvaluenew(burst, alpha, xmin, nfactor=0,
     ks = np.asarray(ks)
     P_value = np.sum(np.sign(ks[ks >= KS]))/Niter
 
-    print('P_value = ' + str(P_value))
-    print('KS = ' + str(KS))
+    if verbose:
+        print('P_value = ' + str(P_value))
+        print('KS = ' + str(KS))
 
     return P_value, ks, hfig, xmin

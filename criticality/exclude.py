@@ -3,7 +3,7 @@ from criticality import tplfit_new as tp
 from copy import deepcopy as cdc
 
 
-def EXCLUDE(burst, setmin, num=1, nfactor=0):
+def EXCLUDE(burst, setmin, num=1, nfactor=0, verbose = True):
 
     '''
     Determine both the lower and upper boundaries with a small KS
@@ -13,12 +13,12 @@ def EXCLUDE(burst, setmin, num=1, nfactor=0):
     dKS = 1
     xmin = 1
     loop_indx = 0
-
-    print("burst ", burst)
-    print("burst[burst > xmin] ", burst[burst > xmin])
-    print("0 ", np.size(burst[burst > xmin]))
-    print("1 ", np.sqrt(np.size(burst[burst > xmin])))
-    print("2 ", num/np.sqrt(np.size(burst[burst > xmin])))
+    if verbose:
+        print("burst ", burst)
+        print("burst[burst > xmin] ", burst[burst > xmin])
+        print("0 ", np.size(burst[burst > xmin]))
+        print("1 ", np.sqrt(np.size(burst[burst > xmin])))
+        print("2 ", num/np.sqrt(np.size(burst[burst > xmin])))
     while ((KS > np.min([num/np.sqrt(np.size(burst[burst > xmin])), 0.1]))
             and (dKS > 0.0005)):
         loop_indx += 1
@@ -40,11 +40,12 @@ def EXCLUDE(burst, setmin, num=1, nfactor=0):
         KS = np.max(np.abs(cdf - fit))
         dKS = np.abs(KS_old-KS)
         if not loop_indx % 200:
-            print("dKS ", dKS)
+            if verbose:
+                print("dKS ", dKS)
         burst = burst[burst < np.max(burst)]
         # print("len burst ", len(burst))
         burstMax = np.max(burst)
-
-    print("dKS Final ", dKS, flush=True)
+    if verbose:
+        print("dKS Final ", dKS, flush=True)
     burstMin = xmin
     return burstMax, burstMin, alpha
