@@ -103,6 +103,7 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
 def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
                 nfactor_bm_tail=0.8, nfactor_tm_tail=1.0, none_fact=40,
                 max_time=7200, verbose = True):
+    print('VERBOSE: ', verbose)
     flag = params['flag']
 
     if params['bm'] is None:
