@@ -95,7 +95,7 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
 
     plt.tight_layout()
     plt.legend()
-    plt.savefig(saveloc + "/" + pltname + 'scaling_relations')
+    plt.savefig(saveloc + "/" + pltname + 'scaling_relations' + '.svg', format='svg')
 
     return fig1
 
@@ -205,11 +205,11 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
         if params['flag'] == 2:
             hax_burst.axes[0].set_xlabel('Size (S)', fontsize=16)
             hax_burst.axes[0].set_ylabel('Prob(size < S)', fontsize=16)
-            hax_burst.savefig(saveloc + "/" + pltname + 'pvalue_burst')
+            hax_burst.savefig(saveloc + "/" + pltname + 'pvalue_burst' + '.svg', format='svg')
 
             hax_time.axes[0].set_xlabel('Duration (D)', fontsize=16)
             hax_time.axes[0].set_ylabel('Prob(size < D)', fontsize=16)
-            hax_time.savefig(saveloc + "/" + pltname + 'pvalue_time')
+            hax_time.savefig(saveloc + "/" + pltname + 'pvalue_time' +  '.svg', format='svg')
             Result['burst_cdf'] = hax_burst
             Result['time_cdf'] = hax_time
         Result['scaling_relation_plot'] = fig1
