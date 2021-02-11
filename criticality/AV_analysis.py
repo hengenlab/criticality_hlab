@@ -134,7 +134,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     Result['P_burst'] = None
     Result['EX_b'] = False
     if exclude:
-        if burstMin > exclude_burst or (xMax-xMin)<exclude_diff_b:
+        if burstMin > exclude_burst or (burstMax-burstMin)<exclude_diff_b:
             print(f'This block excluded for burst: xmin {burstMin}')
             Result['EX_b'] = True
     
