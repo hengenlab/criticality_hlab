@@ -138,7 +138,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
             print(f'This block excluded for burst: xmin {burstMin} diff: {burstMax-burstMin}')
             Result['EX_b'] = True
     
-    if flag == 2 and not Result['Ex_b']:
+    if flag == 2 and not Result['EX_b']:
         if verbose:
             print("About to do the p val test for burst")
         # pvalue test
