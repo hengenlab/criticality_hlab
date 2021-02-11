@@ -175,7 +175,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
             print(f'This block excluded for time: tmin {tMin}')
             Result['EX_t'] = 'EXCLUDED'
 
-    if params['flag'] == 2 and not Result['EX_t'] and not Results['EX_b']:
+    if params['flag'] == 2 and not Result['EX_t'] and not Result['EX_b']:
         # pvalue for time
         Result['P_t'], ks, hax_time, ptest_tmin = \
             pv.pvaluenew(T[idx_time], beta, tMin, nfactor=nfactor_tm,
