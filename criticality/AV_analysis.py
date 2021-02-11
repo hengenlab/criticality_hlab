@@ -102,8 +102,8 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
 
 def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
                 nfactor_bm_tail=0.8, nfactor_tm_tail=1.0, none_fact=40,
-                max_time=7200, verbose = True):
-    print('VERBOSE: ', verbose)
+                max_time=7200, verbose = True, exclude = False, exclude_burst = 50, exclude_time = 20, exclude_diff_b=20, exclude_diff_t=10):
+    #print('VERBOSE: ', verbose)
     flag = params['flag']
 
     if params['bm'] is None:
@@ -132,7 +132,13 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     Result['xmax'] = burstMax
 
     Result['P_burst'] = None
-    if flag == 2:
+    Result['EX_b'] = False
+    if exclude:
+        if burstMin > exclude_burst or (xMax-xMin)<exclude_diff_b:
+            print(f'This block excluded for burst: xmin {burstMin}')
+            Result['EX_b'] = True
+    
+    if flag == 2 and not Result['Ex_b']:
         # pvalue test
         Result['P_burst'], ks, hax_burst, ptest_bmin = \
             pv.pvaluenew(burst[idx_burst], alpha, burstMin, nfactor=nfactor_bm,
@@ -163,7 +169,13 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     Result['tmax'] = tMax
 
     Result['P_t'] = None
-    if params['flag'] == 2:
+    Result['EX_t'] = False
+    if exclude:
+        if tMin > exclude_time or (tMax-tMin)<exclude_diff_t:
+            print(f'This block excluded for time: tmin {tMin}')
+            Result['EX_t'] = 'EXCLUDED'
+
+    if params['flag'] == 2 and not Result['EX_t'] and not Results['EX_b']:
         # pvalue for time
         Result['P_t'], ks, hax_time, ptest_tmin = \
             pv.pvaluenew(T[idx_time], beta, tMin, nfactor=nfactor_tm,
