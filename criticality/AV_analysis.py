@@ -135,10 +135,12 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     Result['EX_b'] = False
     if exclude:
         if burstMin > exclude_burst or (burstMax-burstMin)<exclude_diff_b:
-            print(f'This block excluded for burst: xmin {burstMin}')
+            print(f'This block excluded for burst: xmin {burstMin} diff: {burstMax-burstMin}')
             Result['EX_b'] = True
     
     if flag == 2 and not Result['Ex_b']:
+        if verbose:
+            print("About to do the p val test for burst")
         # pvalue test
         Result['P_burst'], ks, hax_burst, ptest_bmin = \
             pv.pvaluenew(burst[idx_burst], alpha, burstMin, nfactor=nfactor_bm,
@@ -172,10 +174,12 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     Result['EX_t'] = False
     if exclude:
         if tMin > exclude_time or (tMax-tMin)<exclude_diff_t:
-            print(f'This block excluded for time: tmin {tMin}')
+            print(f'This block excluded for time: tmin {tMin} diff: {tMax-tMin}')
             Result['EX_t'] = 'EXCLUDED'
 
     if params['flag'] == 2 and not Result['EX_t'] and not Result['EX_b']:
+        if verbose:
+            print("About to do the p val test for time")
         # pvalue for time
         Result['P_t'], ks, hax_time, ptest_tmin = \
             pv.pvaluenew(T[idx_time], beta, tMin, nfactor=nfactor_tm,
