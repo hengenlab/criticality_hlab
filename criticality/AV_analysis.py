@@ -102,7 +102,8 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
 
 def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
                 nfactor_bm_tail=0.8, nfactor_tm_tail=1.0, none_fact=40,
-                max_time=7200, verbose = True, exclude = False, exclude_burst = 50, exclude_time = 20, exclude_diff_b=20, exclude_diff_t=10):
+                max_time=7200, verbose = True, exclude = False, exclude_burst = 50, 
+                exclude_time = 20, exclude_diff_b=20, exclude_diff_t=10):
     #print('VERBOSE: ', verbose)
     flag = params['flag']
 
@@ -218,7 +219,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
         fig1 = scaling_plots(Result, burst, burstMin, burstMax, alpha, T,
                              tMin, tMax, beta, TT, Sm, sigma, fit_sigma,
                              pltname, saveloc, Result['P_burst'], Result['P_t'])
-        if params['flag'] == 2:
+        if params['flag'] == 2 and not Results['EX_t'] and not Results['EX_b']:
             hax_burst.axes[0].set_xlabel('Size (S)', fontsize=16)
             hax_burst.axes[0].set_ylabel('Prob(size < S)', fontsize=16)
             hax_burst.savefig(saveloc + "/" + pltname + 'pvalue_burst' + '.svg', format='svg')
