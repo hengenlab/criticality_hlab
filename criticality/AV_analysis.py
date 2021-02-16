@@ -212,6 +212,9 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     Result['df'] = np.abs(sigma - fit_sigma[0])
     Result['TT'] = TT
     Result['Sm'] = Sm
+    Result['burst_cdf'] = None
+    Result['time_cdf'] = None
+    Result['scaling_relation_plot'] = None 
 
     if params['plot']:
         saveloc = params['saveloc']
