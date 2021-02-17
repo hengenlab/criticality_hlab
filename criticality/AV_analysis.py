@@ -176,7 +176,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     if exclude:
         if tMin > exclude_time or (tMax-tMin)<exclude_diff_t:
             print(f'This block excluded for time: tmin {tMin} diff: {tMax-tMin}')
-            Result['EX_t'] = 'EXCLUDED'
+            Result['EX_t'] = True
 
     if params['flag'] == 2 and not Result['EX_t'] and not Result['EX_b']:
         if verbose:
