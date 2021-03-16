@@ -16,7 +16,7 @@ Enter your username and password
 cd locationofcriticality_hlab/criticality_hlab/  
 pip install .
 ```
-
+<!--
 ### Adding to path
 #### Windows
 My Computer > Properties > Advanced System Settings > Environment Variables >  
@@ -40,7 +40,7 @@ then open  .profile using your favourite text editor (open -a TextEdit .profile)
 to add location where criticality_hlab is located add the line below  
 
 export PYTHONPATH=/location_of_criticality_hlab:$PYTHONPATH  
-
+-->
 
 
 
