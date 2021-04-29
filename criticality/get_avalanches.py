@@ -140,10 +140,16 @@ def get_avalanches(data, perc=0.25, ncells=-1):
     # Duration should be positive
     # print("T < 0 ", T[T < 0])
     T = T[T > 0]
+    
+    z2data = zdata[0:-1]
+    z2data = np.insert(z2data,0,0)
+    location = np.where(np.logical_and(zdata == 1, z2data == 0))[0]
+    location = location[1:-1]
 
     Result = {
         'S': np.asarray(burst),
-        'T': T
+        'T': T,
+        'loc': location  	
     }
 
     # toc = time.time()
