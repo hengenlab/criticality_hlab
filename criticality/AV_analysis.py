@@ -4,18 +4,6 @@ from criticality import exclude as ex
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# params = {
-#     'flag': 2,
-#     'bm': None,
-#     'tm': None,
-#     'pltname': "test",
-#     'saveloc': "/media/bs001s/caf/model_stuff/5000_cells",
-#     'burst_shuffled': None,
-#     'T_shuffled': None,
-#     'plot_shuffled': False,
-#     'plot': True
-# }
-
 
 def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
                   beta, TT, Sm, sigma, fit_sigma, pltname, saveloc, p_val_b, p_val_t):
@@ -100,19 +88,16 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
     return fig1
 
 
-def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
+def AV_analysis(burst, T, flag = 1, bm = 20, tm = 10, nfactor_bm=0, nfactor_tm=0,
                 nfactor_bm_tail=0.8, nfactor_tm_tail=1.0, none_fact=40,
                 max_time=7200, verbose = True, exclude = False, exclude_burst = 50, 
-                exclude_time = 20, exclude_diff_b=20, exclude_diff_t=10):
+                exclude_time = 20, exclude_diff_b=20, exclude_diff_t=10, plot=True, pltname='', saveloc=''):
     #print('VERBOSE: ', verbose)
-    flag = params['flag']
 
-    if params['bm'] is None:
+    if bm is None:
         if verbose:
             print('none_fact ', none_fact)
         bm = int(np.max(burst)/none_fact)
-    else:
-        bm = params['bm']
 
     Result = {}
     burstMax, burstMin, alpha = \
@@ -147,12 +132,10 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
             pv.pvaluenew(burst[idx_burst], alpha, burstMin, nfactor=nfactor_bm,
                          max_time=max_time, verbose = verbose)
 
-    if params['tm'] is None:
+    if tm is None:
         if verbose:
             print('none_fact ', none_fact)
         tm = int(np.max(T)/none_fact)
-    else:
-        tm = params['tm']
 
     # print("tMax, tMin, beta = ex.EXCLUDE(T, tm)")
     # ckbn tMax, tMin, beta = ex.EXCLUDE(T, tm, nfactor=nfactor_tm)
@@ -178,7 +161,7 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
             print(f'This block excluded for time: tmin {tMin} diff: {tMax-tMin}')
             Result['EX_t'] = True
 
-    if params['flag'] == 2 and not Result['EX_t'] and not Result['EX_b']:
+    if flag == 2 and not Result['EX_t'] and not Result['EX_b']:
         if verbose:
             print("About to do the p val test for time")
         # pvalue for time
@@ -216,13 +199,11 @@ def AV_analysis(burst, T, params, nfactor_bm=0, nfactor_tm=0,
     Result['time_cdf'] = None
     Result['scaling_relation_plot'] = None 
 
-    if params['plot']:
-        saveloc = params['saveloc']
-        pltname = params['pltname']
+    if plot:
         fig1 = scaling_plots(Result, burst, burstMin, burstMax, alpha, T,
                              tMin, tMax, beta, TT, Sm, sigma, fit_sigma,
                              pltname, saveloc, Result['P_burst'], Result['P_t'])
-        if params['flag'] == 2 and not Result['EX_t'] and not Result['EX_b']:
+        if flag == 2 and not Result['EX_t'] and not Result['EX_b']:
             hax_burst.axes[0].set_xlabel('Size (S)', fontsize=16)
             hax_burst.axes[0].set_ylabel('Prob(size < S)', fontsize=16)
             hax_burst.savefig(saveloc + "/" + pltname + 'pvalue_burst' + '.svg', format='svg')
