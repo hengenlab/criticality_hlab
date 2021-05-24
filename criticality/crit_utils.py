@@ -1,5 +1,4 @@
 import glob
-import sahara_work as s
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
@@ -9,11 +8,10 @@ import musclebeachtools as mbt
 import csv
 import os
 import numpy as np
-import sahara_work as saw
 from datetime import datetime as dt
 from datetime import timedelta
-from sahara_work import Crit
-from sahara_work.crit_hlab import Crit_hlab
+from criticality import Crit
+from criticality.crit_hlab import Crit_hlab
 import re
 import pandas as pd
 import os
@@ -32,60 +30,6 @@ def get_cols():
              'p_val_b', 'p_val_t', 'dcc', 'alpha', 'beta', 'fit_sigma', 'sigma', 'passed', 'kappa_b', 'kappa_t', 'k2b', 'k2t', 'kprob_b', 'kprob_t',
               'xmin', 'xmax', 'tmin', 'tmax', 'burstperc', 'Tperc', 'k3b', 'k3t', 'excluded_b', 'excluded_t', 'acc1', 'acc2', 'br1', 'br2', 'burst', 'T', 'num_cells', 'npy_file']   
     return cols
-
-def get_all_results(csvloc, loaded_file, re_load):
-    """
-    because python refuses to play nice with memory. This will load all crit info into
-    a csv to be loaded into a pandas df at a later time
-
-    it doesn't really work. Gonna eventually re-write this correctly but for now - a bandaid
-
-
-    **** deprecated **** don't use this unless you really know what you're doing and want to
-    """
-    paths = sorted(glob.glob(f'/media/HlabShare/clayton_sahara_work/criticality/*/*/*/Crit*'))
-    print(f'Total # of paths: {len(paths)}')
-    error_save = '/media/HlabShare/clayton_sahara_work/criticality/results_errors_TODEL.npy'
-    if re_load:
-        write_csv_header(csvloc)
-        loaded = np.array([])
-        errs = np.array([])
-    else:
-        loaded = np.load(loaded_file)
-        errs = np.load(error_save, allow_pickle = True)
-        print(f'Number of paths already loaded: {len(loaded)}')
-
-    count = 0
-    for i, p in enumerate(paths):
-        if i % 5 == 0:
-            print(f'#paths: {i}', flush = True)
-            print(f'count: {count}', flush = True)
-
-        if count == 100:
-            print('saving progress', flush = True)
-            np.save(loaded_file, loaded)
-            np.save(error_save, errs)
-            count = 0
-
-        if (p not in loaded and p not in errs) or re_load:
-            count += 1
-            err, dat = s.write_to_results_csv_from_path(p, csvloc)
-            if err:
-                if len(dat) < 2:
-                    dat = np.append(dat, p)
-                errs = np.append(errs, dat)
-            else:
-                loaded = np.append(loaded, p)
-
-            if 'LOADED' in p:
-                base = p[:p.find('_LOADED')]
-                os.rename(p, base + '.npy')
-
-    print('saving final progress', flush = True)
-    np.save(loaded_file, loaded)
-    np.save(error_save, errs)
-
-    return errs, loaded
 
 
 def write_to_csv(data, cols, loc):
@@ -225,36 +169,7 @@ def lil_helper_boi(crit):
         info = [e]
     return err, info
 
-def get_paths(scorer = '', geno=None, animal = '', probe = ''):
-    '''
-    **** deprecated as fuck ****
-    meant to pull all paths that need to be analyzed for criticality
-    now things are on the chpc so get w it
-    '''
-    s = f'/media/HlabShare/Clustering_Data/{animal}*/*/*/{probe}*/co/'
-    print(s)
-    basepaths = [f for f in glob.glob(s) if 'files_block' not in f]
-    print(f'total # of folders: {len(basepaths)}', flush = True)
-    og = []
-    errors = []
-    for f in basepaths:
-        neuron_files = glob.glob(f+'*neurons_group0*npy')
-        scored_files = glob.glob(f+f'*scored_{scorer}*.npy')
-        xgb_files = glob.glob(f+f'*neurons_group0.npy')
-        animal, _, _, _ = get_info_from_path(f)
-        thisgeno = get_genotype(animal)
-        if geno is None or thisgeno in geno:
-            if scorer == 'xgb':
-                og = np.concatenate([og, xgb_files])
-            elif len(scored_files) > 0:
-                og = np.concatenate([og, scored_files])
-            elif len(neuron_files) == 1 and (scorer=='xgb' or scorer == ''):
-                og = np.concatenate([og, neuron_files])
-            else:
-                errors.append(f)
-    return og
-
-def get_birthday(animal):
+def get_birthday(animal, returnall=False):
     '''
     animal: string animal name in format 'abc123'
     returns: datetime object of animals birthday at 7:30am on the day
@@ -315,6 +230,8 @@ def get_birthday(animal):
         'eab40': dt(2018, 12, 5, 7, 30)
     }
 
+    if returnall:
+        return bdays.keys()
     return bdays[animal]
 
 def encode_animal(animal):
@@ -322,14 +239,9 @@ def encode_animal(animal):
     meant to help lower the size of arrays carrying information, turns animal into 
     number (cause strings are large compared to ints)
 
-    needs to be updated
+    relies on the assumtion that the birthday dictionary is updated
     '''
-    animals = ['caf01', 'caf19', 'caf22', 'caf26', 'caf34', 'caf37', 'caf40', 'caf42', 
-                'caf48', 'caf49', 'caf50', 'caf52', 'caf54', 'caf55', 'caf58', 'caf60', 
-                'caf61', 'caf62', 'caf66', 'caf69', 'caf71', 'caf72', 'caf73', 'caf74', 
-                'caf75','caf77', 'caf78', 'caf79', 'caf80', 'caf81', 'caf82', 'caf84',
-                'caf88', 'caf89', 'caf90', 'caf91', 'caf92', 'caf94', 'caf95', 'caf96', 
-                'caf97','eab52', 'eab47', 'eab', 'eab50', 'eab40']
+    animals = get_birthday('', returnall=True)
     nums = np.arange(len(animals))
 
     keys = dict(zip(animals, nums))
@@ -341,10 +253,7 @@ def decode_animal(num):
     decodes the number from encode_animal() back into a string
     '''
 
-    animals = ['caf01', 'caf19', 'caf22', 'caf26', 'caf34', 'caf37', 'caf40', 'caf42', 
-                'caf48', 'caf49', 'caf50', 'caf52', 'caf54', 'caf55', 'caf58', 'caf60', 
-                'caf61', 'caf62', 'caf66', 'caf69', 'caf71', 'caf72', 'caf73', 'caf74',
-                 'caf75', 'eab52', 'eab47', 'eab', 'eab50', 'eab40']
+    animals = list(get_birthday('', True))
 
     return animals[num]
 
@@ -492,7 +401,19 @@ def get_probe(animal, region):
     return probe 
 
 
-def get_params(animal, probe):
+def get_params(animal, probe = None):
+    '''
+    Given an animal and optionally a probe, it returns the necessary criticality parameters
+    it only returns the parameters that need to be changed per animal, the others stay constant for a run
+    and can be found in the crit_script used to submit jobs.
+
+    returns specific params for probe2 for caf22, if no specific probe params it returns caf22 params, 
+    if no caf22 params it returns the default parameters
+    cr.get_params('caf22', 'probe2')
+
+    returns base caf22 params, if no caf22 params it returns the default
+    cr.get_params('caf22')
+    '''
     # as of 5/05/21 these params produced an effect on all our data
     # if you need to return to these, they're here, don't delete
     keep_these_params = {
@@ -1597,7 +1518,10 @@ def get_params(animal, probe):
         }
     }
 
-    region = get_regions(animal)[int(probe[-1])-1]
+    if probe is None:
+        region = ''
+    else:
+        region = get_regions(animal)[int(probe[-1])-1]
 
     #pref the probe params
     if animal in probe_params.keys():
@@ -1611,9 +1535,6 @@ def get_params(animal, probe):
     # otherwise base params it is, thank you for visiting
     return base
     
-    
-
-        
 
 def get_genotype(animal):
     '''
@@ -1729,31 +1650,9 @@ def get_hstype(animal):
 
 def load_crit(path):
     '''
-    loads a crit object
+    loads a crit object given a path to a CRIT*.npy
     '''
     return np.load(path, allow_pickle = True)[0]
-
-def update_object(old, save_new = False):
-    '''
-    cute thought. needs to be fixed, probably doesn't need to exist
-    '''
-    new_obj = Crit_hlab(
-
-        spikewords = old.spikewords, perc = old.perc, nfactor_bm = old.nfactor_bm,
-        nfactor_tm = old.nfactor_tm, nfactor_bm_tail = old.nfactor_bm_tail, nfactor_tm_tail = old.nfactor_tm_tail,
-        saveloc = old.saveloc, pltname = old.pltname, plot = old.plot, burst = old.burst, T = old.T, tm = old.tm,
-        p_value_burst = old.p_value_burst, p_value_t = old.p_value_t, dcc = old.dcc, scaling_plot = old.scaling_plot,
-        burst_cdf_plot = old.burst_cdf_plot, t_cdf_plot = old.t_cdf_plot, pre = old.pre, fit = old.fit,
-        xmin = old.xmin, xmax = old.xmax, tmin = old.tmin, tmax = old.tmax, alpha = old.alpha, time_frame = old.time_frame,
-        block_num = old.block_num, qualities = old.qualities, cell_types = old.cell_types, hour_bins = old.hour_bins,
-        ava_binsize = old.ava_binsize, animal = old.animal, date = old.date, final = old.final, cells = old.cells,
-        probe = old.probe, filename = old.filename, pathname = old.pathname, scored_by = old.scored_by
-        )
-
-    if save_new:
-        np.save(old.filename, [new_obj])
-
-    return new_obj
 
 def __get_totaltime(time_frame):
     '''
@@ -1776,18 +1675,15 @@ def __get_paramstr(animal, probe, date, time_frame, hour_bins, perc, ava_binsize
     return s
 
 
-def generate_timeframes(start, end, blocksize):
-    '''
-    lmfao
-    the good old days
-    dont need but dont want to delete
-    '''
-    ts = np.arange(start, end + 1, blocksize)
-    time_frames = [str(a) + "_" + str(b) for a, b in zip(ts[:-1], ts[1:])]
-    return time_frames
-
-
 def gen_timeline():
+    '''
+    Takes no parameters. Goes through all locations in our servers, collects info about all animals binary recorded data and 
+    returns a lovely dictionary for every animal with the date of the earliest .bin and the latest .bin along with the
+    age of the animal at those two points.
+
+
+    If you think it's not working, make sure the list of locations is up to date and there isn't a subfolder that needs to be checked. 
+    '''
     locs = ['bs001r/rawdata/', 'bs002r', 'bs003r', 'bs004r', 'bs005r', 'bs006r', 'bs007r', 'bs003r/D1/','bs003r/D1_442b/', 'bs004r/D1/', 'bs005r/D1/', 'bs006r/D1/', 'bs007r/D1/', 'bs007r/D1_442b/', 'bs007r/D1_442a/']
     dat = {}
     for loc in locs:
@@ -1800,7 +1696,7 @@ def gen_timeline():
                 animal = matches[0][0]
                 animal_clean = animal[:3].lower() + str(int(animal[3:]))
                 try:
-                    g = saw.get_genotype(animal_clean)
+                    g = get_genotype(animal_clean)
                 except KeyError:
                     print(f'dont have records for {animal_clean} ---- skipping')
                     g=None
@@ -1826,7 +1722,7 @@ def gen_timeline():
                             if d2 > dat[animal_clean]['max']:
                                 dat[animal_clean]['max'] = d2
     for a in dat.keys():
-        bday = saw.get_birthday(a)
+        bday = get_birthday(a)
         min_age = dat[a]['min'] - bday
         max_age = dat[a]['max'] - bday
         dat[a]['min_age'] = int(min_age.total_seconds()/60/60/24)
@@ -1835,8 +1731,8 @@ def gen_timeline():
 
 def save_obj(crit):
     '''
-    save shit
-    gotta get saved as an actual array so numpy doesn't flip
+    made for criticality saving. 
+    gotta save the object as an actual array so numpy doesn't flip out
     '''
     to_save = np.array([crit])
     np.save(f'{crit.saveloc}Crit_{crit.pltname}', to_save)
@@ -1875,32 +1771,7 @@ def get_info_from_path(path):
 
     return animal_clean, date, time_frame, probe
 
-def get_cell_stats(cell):
-    '''
-    nope
-    '''
-    fr, xbins = cell.plotFR(binsz = 3600, start = False, end = False,
-                            lplot = 0)
 
-    isis = []
-    bins = np.arange(cell.start_time, cell.end_time, 300)  # 5 min bins
-
-    for i in range(len(bins)):
-        if i == len(bins) - 1:
-            end_bin = cell.end_time
-        else:
-            end_bin = bins[i + 1]
-        spk_idxs = np.where(np.logical_and(cell.spike_time_sec > bins[i], cell.spike_time_sec < end_bin))
-        isis.append(np.diff(cell.spike_time[spk_idxs]))
-
-    means = np.array([np.mean(i) for i in isis])
-    stds = np.array([np.std(i) for i in isis])
-    cvs = stds / means
-    binned_cvs = [cvs[i * 12:(i + 1) * 12] for i in np.arange(int(xbins[-1]))]
-    cv = [np.mean(i) for i in binned_cvs]
-    if len(fr) != len(cv):
-        print('this isnt working, fix it')
-    return fr, cv
 
 
 def construct_fr_df(paths):

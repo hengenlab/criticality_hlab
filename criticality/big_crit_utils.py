@@ -1,9 +1,7 @@
 import numpy as np
 import glob
 import pandas as pd
-from sahara_work import Crit
-from sahara_work import lilo_and_stitch
-import sahara_work as sw
+import criticality as cr
 from datetime import datetime as dt
 import signal
 import sys
@@ -22,7 +20,7 @@ def write_qsub_header(shfile):
 
 
 def write_to_files(o, csvloc):
-    err, appended = sw.write_to_results_csv(o, csvloc)
+    err, appended = cr.write_to_results_csv(o, csvloc)
     if err:
         print('something weird happened, this should not have errored')
     # else:
@@ -33,7 +31,7 @@ def write_to_files(o, csvloc):
     return appended
 
 def write_to_files_chpc(o, csvloc):
-    err, appended = sw.write_to_results_csv(o, csvloc)
+    err, appended = cr.write_to_results_csv(o, csvloc)
     if err:
         print('something weird happened, this should not have errored')
     else:
@@ -44,7 +42,7 @@ def write_to_files_chpc(o, csvloc):
     return appended
 
 def write_to_pkl_chpc(o, pkl_loc):
-    err, appended = sw.write_to_results_pkl(o, pkl_loc)
+    err, appended = cr.write_to_results_pkl(o, pkl_loc)
     if err:
         print('something weird happened, this should not have errored')
     else:
@@ -103,9 +101,9 @@ def run_testing_chpc(paths, params, JOBDIR, jobnum=0, jobname = '',animal = '', 
     csv_file = f'{JOBDIR}/results_{jobname}.csv'
     pkl_file = f'{JOBDIR}/results_{jobname}.pkl'
 
-    sw.write_csv_header(csv_file)
+    cr.write_csv_header(csv_file)
 
-    all_objs, errors = sw.lilo_and_stitch(paths, params, save = params['save'], timeout=params['timeout'])
+    all_objs, errors = cr.lilo_and_stitch(paths, params, save = params['save'], timeout=params['timeout'])
 
     results = []
     for o in all_objs:
@@ -114,7 +112,7 @@ def run_testing_chpc(paths, params, JOBDIR, jobnum=0, jobname = '',animal = '', 
         results.append(appended)
 
     if len(all_objs) > 0:
-        cols = sw.get_cols()
+        cols = cr.get_cols()
         df = pd.DataFrame(results, columns = cols)
         
         group = df.groupby(['animal', 'probe', 'date', 'scored'])
@@ -168,9 +166,9 @@ def get_all_paths(animal):
     print(f'total num animals: {len(all_animals)}', flush=True)
     allpaths = []
     for animal in all_animals:
-        probe = sw.get_probe(animal, region = 'CA1')
-        geno = sw.get_genotype(animal)
-        if geno == 'app_ps1' or (len(sw.get_regions(animal))>=4):
+        probe = cr.get_probe(animal, region = 'CA1')
+        geno = cr.get_genotype(animal)
+        if geno == 'app_ps1' or (len(cr.get_regions(animal))>=4):
             a = smol_2_big(animal)
             animal_paths = sorted([p for p in all_paths if a in p])
             print(f'{animal}: {len(animal_paths)}')
@@ -187,9 +185,9 @@ def get_all_paths(animal):
 def get_rand_subset(per_animal = 2):
     paths = []
     allpaths = get_all_paths('')
-    all_animals = np.unique([sw.get_info_from_path(p)[0] for p in allpaths])
+    all_animals = np.unique([cr.get_info_from_path(p)[0] for p in allpaths])
     for animal in all_animals:
-        probe = sw.get_probe(animal, region = 'CA1')
+        probe = cr.get_probe(animal, region = 'CA1')
         if probe != -1:
             a = smol_2_big(animal)
             animal_paths = np.sort([p for p in allpaths if a in p and probe in p])
@@ -207,7 +205,7 @@ def make_chpc_crit_jobs(paths_per_job, jobname, total_jobs=None, paths = None, a
     if paths is None:
         paths = get_all_paths(animal)
 
-    all_animals = np.unique([sw.get_info_from_path(p)[0] for p in paths])
+    all_animals = np.unique([cr.get_info_from_path(p)[0] for p in paths])
     pathcount = 0
     jobcount = 0
     finalpaths = []
@@ -285,83 +283,3 @@ def resubmit_jobs(efiles):
             qsub = glob.glob(f+'/qsub*')[0]
             sub.write(f'qsub {qsub}\n')
     print('qsub_tosubmit.sh written -- done')
-
-
-def run_linear(paths, params, jobnum, animal = '', probe = '', rerun = True, redo = False):
-    paths = sw.get_paths(animal = animal, probe = probe)
-    all_objs, errors = lilo_and_stitch(paths, params, rerun = rerun, save = True, verbose=False)
-    results = []
-    for o in all_objs:
-        appended = write_to_files(o, csvloc)
-        results.append(appended)
-
-    if len(all_objs) > 0:
-        df = pd.DataFrame(results, columns = ['animal', 'probe', 'date', 'time_frame', 'block_num', 'scored', 'bday', 'rstart_time', 'age', 'geno', 'p_val_b', 'p_val_t', 'dcc', 'passed', 'kappa_b', 'kappa_t', 'k2b', 'k2t', 'kprob_b', 'kprob_t'])
-        group = df.groupby(['animal', 'probe', 'date', 'scored'])
-        strs = []
-        for i, row in group:
-            num_passed = row[row["passed"]].count()['passed']
-            total_num = row.count()['passed']
-            avg_dcc = row.mean()['dcc']
-            animal = row['animal'].to_numpy()[0]
-            date = row['date'].to_numpy()[0]
-            probe = row['probe'].to_numpy()[0]
-            scored = row['scored'].to_numpy()[0]
-            s = f'{str(animal)} -- {probe} -- {date} -- {scored} -- passed {num_passed}/{total_num} -- avg dcc {avg_dcc}'
-            strs.append(s)
-    
-    now = dt.now()
-    with open(f'/media/HlabShare/clayton_sahara_work/criticality/STATUS_{jobnum}.txt', 'a+') as f:
-        f.write(f'\n{now.strftime("%d/%m/%Y %H:%M:%S")} ------------ \n')
-        f.write(f'{b} PATHS DONE - of this job\n')
-        f.write(f'worker:\t{mp.current_process()}\n')
-        if len(all_objs) > 0: 
-            for s in strs:
-                f.write(f'{s}\n')
-        if len(errors) > 0:
-            f.write('\tERRORS:\n')
-            for e in errors:
-                f.write(f'\t{e[0]}\n')
-                errored = np.load('/media/HlabShare/clayton_sahara_work/criticality/errored_paths.npy')
-                errored = np.append(errored, e[1])
-                np.save('/media/HlabShare/clayton_sahara_work/criticality/errored_paths.npy', errored)
-
-    return 0
-
-
-def plot_dist(ax, burst, xmin, alpha, c, shuffled):
-    pdf = np.histogram(burst, bins = np.arange(1, np.max(burst) + 2))[0]
-    p = pdf / np.sum(pdf)
-    p[p==0] = np.nan
-    ax.plot(np.arange(1, np.max(burst) + 1), p, color = c, alpha = 0.75, linewidth=1)
-    
-    if shuffled is not None:
-        pdfs = np.histogram(shuffled, bins = np.arange(1, np.max(shuffled) + 2))[0]
-        ps = pdfs / np.sum(pdfs)
-        ax.plot(np.arange(1, np.max(shuffled) + 1), ps, color = 'gray', alpha = 0.75, linewidth=1)
-        
-    x = np.arange(xmin, np.max(burst)**0.8)
-    y = (np.size(np.where(burst == xmin + 6)[0]) / np.power(xmin + 6, -alpha)) *\
-        np.power(x, -alpha)
-    y = y / np.sum(pdf)
-    ax.plot(x, y, color = 'red')
-    
-    ax.set_yscale('log')
-    ax.set_xscale('log')
-    ax.set_xlim(1,10**4)
-
-def scrub_dists(crit_objs):
-    res = []
-    for p in crit_objs:
-        crit = saw.load_crit(p)
-        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=[5, 5])
-        plot_dist(ax, crit.burst, crit.xmin, crit.alpha, 'lightseagreen', None)
-        fig.show()
-        score = input('rating?: ')
-        res.append([crit.animal, crit.date, crit.time_frame, crit.block_num, crit.probe, crit.burst, 'burst', score])
-
-        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=[5, 5])
-        plot_dist(ax, crit.T, crit.tmin, crit.beta, 'lightcoral', None)
-        fig.show()
-        score = input('rating?: ')
-        res.append([crit.animal, crit.date, crit.time_frame, crit.block_num, crit.probe, crit.T, 'T', score])
