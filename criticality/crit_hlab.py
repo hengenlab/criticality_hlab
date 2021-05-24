@@ -1,4 +1,4 @@
-from sahara_work.crit_class import Crit
+from criticality.crit_class import Crit
 import numpy as np
 import criticality as cr
 import musclebeachtools as mbt
@@ -6,15 +6,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 import seaborn as sns
-import re
-import pandas as pd
 import os
-import glob
-import signal
-import gc
 from datetime import datetime as dt
 from datetime import timedelta
-import csv
 from copy import deepcopy as cdc
 
 
@@ -103,33 +97,6 @@ class Crit_hlab(Crit):
               f'nfactor_tm: {self.nfactor_tm}\n'
               f'nfactor_bm_tail: {self.nfactor_bm_tail}\n'
               f'nfactor_tm_tail: {self.nfactor_tm_tail}\n')
-
-    def run_crit_from_start(self, flag = 2, save = False):
-
-        """
-        This isn't going to work as a class function, if you need it then fix it
-        """
-        if self.final:
-            print('This crit object is final, there are no cells saved here. If youd like to rerun this block start from lilo_and_stitch')
-            return
-        total_time = s.__get_totaltime(self.time_frame)
-        num_bins = int(total_time / self.hour_bins)
-        bin_len = int((self.hour_bins * 3600) / self.ava_binsize)
-        good_cells = [cell for cell in self.cells if self.quality in self.qualities and self.cell_type in self.cell_types]
-        spikewords = mbt.n_spiketimes_to_spikewords(good_cells, binsz = self.ava_binsize, binarize = 1)
-        idx = self.block_num
-        if idx == num_bins - 1:
-            data = spikewords[:, (idx * bin_len):]
-        else:
-            data = spikewords[:, (idx * bin_len): ((idx + 1) * bin_len)]
-        self.spikewords = data
-        param_str = s.__get_paramstr(self.animal, self.probe, self.date, self.time_frame, self.hour_bins, self.perc, self.ava_binsize, self.qualities, self.cell_types, idx)
-        self.pltname = param_str
-        self.run_crit(flag = flag)
-        print(f'BLOCK RESULTS: P_vals - {self.p_value_burst}   {self.p_value_t} \n DCC: {self.dcc}')
-        if save:
-            to_save = np.array([obj])
-            np.save(f'{obj.saveloc}Crit_{param_str}', to_save)
 
     def run_branching_ratio(self, cells, binsize=0.004, start = 0, end = 1, kmax=500, pltname = None):
         '''
