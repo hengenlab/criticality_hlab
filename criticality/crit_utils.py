@@ -1647,6 +1647,7 @@ def get_hstype(animal):
         'eab47': ['EAB50champ_00','EAB50champ_00','EAB50champ_00'],
         'eab50': ['EAB50champ_00','EAB50champ_00','EAB50champ_00','EAB50champ_00','EAB50champ_00','EAB50champ_00','EAB50champ_00','EAB50champ_00'],
     }
+    return regions[animal]
 
 def load_crit(path):
     '''
@@ -1770,8 +1771,6 @@ def get_info_from_path(path):
     animal_clean = animal[:3].lower() + str(int(animal[3:]))
 
     return animal_clean, date, time_frame, probe
-
-
 
 
 def construct_fr_df(paths):
@@ -1950,145 +1949,6 @@ params = {
     'br_binlen': 5, # in minutes
     'br_numbins': 3 # begining middle end - this isn't implemented right now, it's just in the middle
 }
-
-
-#this bad boy reruns paths if it fails a pval. not the best, wouldn't recomend
-def lilo_and_stitch_extended_edition(paths, params, rerun = False, save = True, overlap = False, verbose = True, timeout = 600):
-    all_objs = []
-    errors = []
-    for idx, path in enumerate(paths):
-        tic = time.time()
-        basepath = path[:path.rfind('/')]
-        
-        print(f'\n\nWorking on ---- {path}', flush = True)
-        animal, date, time_frame, probe = get_info_from_path(path)
-        print(f'INFO: {animal} -- {date} -- {time_frame} -- {probe}')
-        total_time = __get_totaltime(time_frame)
-        saveloc = os.path.join(params['base_saveloc'], animal, date, probe) + '/'
-        print(f'saveloc: {saveloc}', flush=True)
-        if not os.path.exists(saveloc):
-            os.makedirs(saveloc)
-
-        if path.find('scored') < 0:
-            scorer = 'xgb'
-        else:
-            scorer = path[path.find('scored')+7:path.find('.npy')]
-
-        num_bins = int(total_time / params['hour_bins'])
-        bin_len = int((params['hour_bins'] * 3600) / params['ava_binsz'])
-
-
-        quals = [1, 2, 3]
-        fr_cutoff = 50
-        try:
-            cells = np.load(path, allow_pickle = True)
-            good_cells = [cell for cell in cells if cell.quality in quals and cell.cell_type in params['cell_type'] and cell.plotFR(binsz=cell.end_time, lplot=0, lonoff=0)[0][0] < fr_cutoff and cell.presence_ratio() > .99]
-            num_cells = len(good_cells)
-    
-            if len(good_cells) < 10:
-                quals = [1, 2, 3]
-                good_cells = [cell for cell in cells if cell.quality in quals and cell.cell_type in params['cell_type'] and cell.plotFR(binsz=cell.end_time, lplot=0, lonoff=0)[0][0] < fr_cutoff and cell.presence_ratio() > .99]
-
-            elif len(good_cells) < 60:
-                quals = [1, 2]
-                good_cells = [cell for cell in cells if cell.quality in quals and cell.cell_type in params['cell_type'] and cell.plotFR(binsz=cell.end_time, lplot=0, lonoff=0)[0][0] < fr_cutoff and cell.presence_ratio() > .99]
-            elif len(good_cells) >= 60:
-                quals = [1]
-                good_cells = [cell for cell in cells if cell.quality in quals and cell.cell_type in params['cell_type'] and cell.plotFR(binsz=cell.end_time, lplot=0, lonoff=0)[0][0] < fr_cutoff and cell.presence_ratio() > .99]
-
-                # if len(good_cells) > 100:
-                #     cell_idxs = np.random.choice(len(good_cells), 50, replace=False)
-                #     good_cells = good_cells[cell_idxs]
-            if overlap :
-                start = 3600
-            else:
-                start = False
-            spikewords = mbt.n_spiketimes_to_spikewords(good_cells, binsz = params['ava_binsz'], binarize = 1, start = start)
-        except Exception as err:
-            print("Neuron File Won't Load")
-            print(err)
-            errors.append([f'{animal} -- {probe} -- {date} -- {time_frame} -- ALL --- {scorer} --- ERRORED', path])
-            continue
-        for idx in np.arange(0, num_bins):
-            liltic = time.time()
-            signal.signal(signal.SIGALRM, signal_handler)
-            signal.alarm(timeout)
-            noerr = True
-            try:
-                print(f'Working on block {idx} --- hours {idx * params["hour_bins"]}-{(idx + 1) * params["hour_bins"]}', flush = True)
-                if idx == num_bins - 1:
-                    data = spikewords[:, (idx * bin_len):]
-                else:
-                    data = spikewords[:, (idx * bin_len): ((idx + 1) * bin_len)]
-
-                param_str = __get_paramstr(animal, probe, date, time_frame, params['hour_bins'], params['perc'], params['ava_binsz'], quals, params['cell_type'], idx)
-                crit = Crit_hlab(spikewords = data, perc = params['perc'], nfactor_bm = params['nfactor_bm'], nfactor_tm = params['nfactor_tm'],
-                            nfactor_bm_tail = params['nfactor_bm_tail'], nfactor_tm_tail = params['nfactor_tm_tail'], saveloc = saveloc,
-                            pltname = f'{param_str}_{scorer}', plot = params['plot'])
-
-                crit.run_crit(flag = params['flag'], verbose = verbose)
-                crit.time_frame = time_frame
-                crit.block_num = idx
-                crit.qualities = quals
-                crit.cell_types = params['cell_type']
-                crit.hour_bins = params['hour_bins']
-                crit.ava_binsize = params['ava_binsz']
-                crit.animal = animal
-                crit.date = date
-                crit.final = False
-                crit.cells = [cell for cell in cells if cell.quality < 4]
-                crit.probe = probe
-                crit.scored_by = scorer
-                crit.pathname = path
-                crit.filename = f'{saveloc}Crit_{param_str}_{scorer}'
-
-            except Exception as err:
-                print('TIMEOUT or ERROR', flush = True)
-                print(err)
-                errors.append([f'{animal} -- {probe} -- {date} -- {time_frame} -- {idx} --- {scorer} --- ERRORED', path])
-                noerr = False
-                signal.alarm(0)
-
-            if rerun and noerr:
-                while crit.p_value_burst < 0.05 or crit.p_value_t < 0.05:
-                    signal.signal(signal.SIGALRM, signal_handler)
-                    signal.alarm(timeout)
-                    print('\nRERUNNING BLOCK', flush = True)
-                    if crit.nfactor_tm_tail < 0.75 or crit.nfactor_bm_tail < 0.75:
-                        print('DONE RERUNNNING -- BLOCK WILL NOT PASS\n')
-                        signal.alarm(0)
-                        break
-                    if crit.p_value_burst < 0.05:
-                        crit.nfactor_bm_tail -= 0.05
-                        #crit.bm += 5
-                    if crit.p_value_t < 0.05:
-                        crit.nfactor_tm_tail -= 0.05
-                        #crit.tm += 5
-                    try:
-                        crit.run_crit(flag = params['flag'], verbose = verbose)
-
-                    except Exception:
-                        print('TIMEOUT or ERROR', flush = True)
-                        errors.append([f'{animal} -- {probe} -- {date} -- {time_frame} -- {idx} --- {scorer} --- ERRORED', path])
-                        signal.alarm(0)
-                        noerr = False
-                        break
-                    signal.alarm(0)
-
-            if noerr:
-                print(f'BLOCK RESULTS: P_vals - {crit.p_value_burst}   {crit.p_value_t} \n DCC: {crit.dcc}', flush = True)
-                if save:
-                    to_save = np.array([crit])
-                    np.save(crit.filename, to_save)
-                all_objs.append(crit)
-            liltoc = time.time()
-            print(f'Time for 1 block: {(liltoc-liltic)/60} min')
-        toc = time.time()
-        print(f'TOTAL PATH TIME: {(toc-tic)/60} min')
-
-
-    return all_objs, errors
-
 
 def lilo_and_stitch(paths, params, save = True, overlap = False, timeout = False):
     '''
