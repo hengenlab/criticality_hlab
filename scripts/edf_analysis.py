@@ -24,7 +24,7 @@ for edf_file in edf_files:
            .format(fs, num_chs))
     for i in range(num_chs):
         plt.subplot(num_chs, 1, i+1)
-        plt.plot(signals[0])
+        plt.plot(signals[i])
     plt.show()
     # break after first file
     break
