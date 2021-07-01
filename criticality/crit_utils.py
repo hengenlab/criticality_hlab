@@ -69,7 +69,7 @@ def write_to_results_csv(crit, loc):
     returns: errors if they occur, array of data that was written to the file
     '''
     cols = get_cols()
-    err, data = s.lil_helper_boi(crit)
+    err, data = lil_helper_boi(crit)
     if err:
         print('this path failed, plz just fucking delete it and re-do this path ffs')
         return err, data
@@ -78,7 +78,7 @@ def write_to_results_csv(crit, loc):
 
 def write_to_results_pkl(crit, loc):
     cols = get_cols()
-    err, data = s.lil_helper_boi(crit)
+    err, data = lil_helper_boi(crit)
     if err:
         print('This path failed, this really shouldnt happen idk what to tell ya')
         print(err)
@@ -146,12 +146,12 @@ def lil_helper_boi(crit):
     err = False
 
     try:
-        birth = s.get_birthday(crit.animal)
+        birth = get_birthday(crit.animal)
         start_time = crit.rstart_time
         start_time = dt.strptime(start_time, '%Y-%m-%d_%H-%M-%S')
         age = start_time - birth
         age = age + timedelta(hours = int((crit.block_num * crit.hour_bins)))
-        geno = s.get_genotype(crit.animal)
+        geno = get_genotype(crit.animal)
         burstperc = get_data_perc(crit.burst, crit.xmin, crit.xmax)
         Tperc = get_data_perc(crit.T, crit.tmin, crit.tmax)
         if crit.p_value_burst is None or crit.p_value_t is None:
@@ -207,22 +207,27 @@ def get_birthday(animal, returnall=False):
         'caf79': dt(2020, 4, 19, 20, 30),
         'caf80': dt(2020, 4, 19, 20, 30),
         'caf81': dt(2019, 12, 5, 7, 30),
-        'caf82': dt(2019, 12, 5, 7,30),
-        'caf84':dt(2020, 8, 10, 7, 30),
-        'caf88':dt(2019, 12, 5, 7, 30),
-        'caf89':dt(2020, 7, 23, 7, 30),
-        'caf90':dt(2021, 2, 24, 7, 30),
-        'caf91':dt(2021, 2, 24, 7, 30),
-        'caf92':dt(2021, 2, 24, 7, 30),
-        'caf94':dt(2021, 1, 30, 7, 30),
-        'caf95':dt(2021, 1, 30, 7, 30),
-        'caf96':dt(2021, 1, 30, 7, 30),
-        'caf97':dt(2021, 1, 30, 7, 30),
-        'caf99':dt(2020, 10, 1, 7, 30),
-        'caf100':dt(2021, 3, 1, 7, 30),
-        'caf101':dt(2021, 3, 1, 7, 30),
-        'caf102':dt(2021, 1, 30, 7, 30),
-        'caf103':dt(2020, 11, 24, 7, 30),
+        'caf82': dt(2019, 12, 5, 7, 30),
+        'caf84': dt(2020, 8, 10, 7, 30),
+        'caf88': dt(2019, 12, 5, 7, 30),
+        'caf89': dt(2020, 7, 23, 7, 30),
+        'caf90': dt(2021, 2, 24, 7, 30),
+        'caf91': dt(2021, 2, 24, 7, 30),
+        'caf92': dt(2021, 2, 24, 7, 30),
+        'caf94': dt(2021, 1, 30, 7, 30),
+        'caf95': dt(2021, 1, 30, 7, 30),
+        'caf96': dt(2021, 1, 30, 7, 30),
+        'caf97': dt(2021, 1, 30, 7, 30),
+        'caf99': dt(2020, 10, 1, 7, 30),
+        'caf100': dt(2021, 3, 1, 7, 30),
+        'caf101': dt(2021, 3, 1, 7, 30),
+        'caf102': dt(2021, 1, 30, 7, 30),
+        'caf103': dt(2020, 11, 24, 7, 30),
+        'caf104': dt(2020, 5, 26, 7, 30),
+        'caf106': dt(2020, 12, 7, 7, 30),
+        'caf107': dt(2021, 3, 30, 7, 30),
+        'caf108': dt(2020, 8, 14, 7, 30),
+        'caf109': dt(2020, 7, 20, 7, 30),
         'eab52': dt(2019, 4, 19, 7, 30),
         'eab47': dt(2019, 2, 17, 7, 30),
         'eab': dt(2019, 2, 17, 7, 30),
@@ -266,12 +271,12 @@ def get_regions(animal):
     regions = {
         'caf01': ['CA1'],
         'caf19': ['CA1'],
-        'caf22': ['V1','CA1'],
-        'caf26': ['M1','CA1','S1'],
-        'caf34': ['S1','M1','CA1','NAc'],
+        'caf22': ['V1', 'CA1'],
+        'caf26': ['M1', 'CA1', 'S1'],
+        'caf34': ['S1', 'M1', 'CA1', 'NAc'],
         'caf37': ['CA1'],
         'caf40': ['CA1'],
-        'caf42': ['M1','ACad','CA1','RSPv','V1'],
+        'caf42': ['M1', 'ACad', 'CA1', 'RSPv', 'V1'],
         'caf48': ['CA1'],
         'caf49': ['CA1'],
         'caf50': ['CA1'],
@@ -282,21 +287,21 @@ def get_regions(animal):
         'caf60': ['CA1'],
         'caf61': ['CA1'],
         'caf62': ['CA1'],
-        'caf66': ['RSPv','V1','C_Pu','LGN','Sup_col','S1','CA1','M1'],
-        'caf69': ['ACad','RSPv','V1','CA1'],
-        'caf71': ['V1','RSPv','CA1','ACad'],
+        'caf66': ['RSPv', 'V1', 'C_Pu', 'LGN', 'Sup_col', 'S1', 'CA1', 'M1'],
+        'caf69': ['ACad', 'RSPv', 'V1', 'CA1'],
+        'caf71': ['V1', 'RSPv', 'CA1', 'ACad'],
         'caf72': ['CA1'],
-        'caf73': ['ACad','CA1','RSPv','V1'],
-        'caf74': ['ACad','RSPv','CA1','V1'],
-        'caf75': ['ACad','CA1','RSPv','V1'],
-        'caf77': ['CA1','RSPv','ACad','V1'],
+        'caf73': ['ACad', 'CA1', 'RSPv', 'V1'],
+        'caf74': ['ACad', 'RSPv', 'CA1', 'V1'],
+        'caf75': ['ACad', 'CA1', 'RSPv', 'V1'],
+        'caf77': ['CA1', 'RSPv', 'ACad', 'V1'],
         'caf78': ['CA1'],
         'caf79': ['CA1'],
         'caf80': ['CA1'],
-        'caf81': ['ACad','V1', 'CA1', 'RSPv'],
-        'caf82': ['CA1','RSPv','V1','ACad'],
+        'caf81': ['ACad', 'V1', 'CA1', 'RSPv'],
+        'caf82': ['CA1', 'RSPv', 'V1', 'ACad'],
         'caf84': ['CA1'],
-        'caf88': ['CA1','ACad','RSPv','V1'],
+        'caf88': ['CA1', 'ACad', 'RSPv', 'V1'],
         'caf89': ['CA1'],
         'caf90': ['CA1'],
         'caf91': ['CA1'],
@@ -305,16 +310,21 @@ def get_regions(animal):
         'caf95': ['CA1'],
         'caf96': ['CA1'],
         'caf97': ['CA1'],
-        'caf99': ['C_Pu','S1','M1','NAc','LGN','V1','RSPv','Sup_col'],
+        'caf99': ['C_Pu', 'S1', 'M1', 'NAc', 'LGN', 'V1', 'RSPv', 'Sup_col'],
         'caf100': ['CA1'],
         'caf101': ['CA1'],
         'caf102': ['CA1'],
         'caf103': ['CA1'],
-        'eab52': ['CA1','V1'],
-        'eab47': ['M1_M2','CA1','V2'],
-        'eab': ['M1_M2','CA1','V2'],
-        'eab50': ['C_Pu','C_Pu','M1_M2','CA1_DG','CA1_DG','S1','Sup_col','V1_V2'],
-        'eab40': ['S1','CA1','M1','M2']
+        'caf104': ['CA1', 'V1', 'ACad', 'RSPv'],
+        'caf106': ['M1', 'S1', 'C_Pu', 'NAc', 'LGN', 'RSPv', 'Sup_col', 'V1'],
+        'caf107': ['CA1'],
+        'caf108': ['CA1'],
+        'caf109': ['CA1'],
+        'eab52': ['CA1', 'V1'],
+        'eab47': ['M1_M2', 'CA1', 'V2'],
+        'eab': ['M1_M2', 'CA1', 'V2'],
+        'eab50': ['C_Pu', 'C_Pu', 'M1_M2', 'CA1_DG', 'CA1_DG', 'S1', 'Sup_col', 'V1_V2'],
+        'eab40': ['S1', 'CA1', 'M1', 'M2']
     }
     return regions[animal]
 
@@ -357,7 +367,7 @@ def get_sex(animal):
         'caf80': 'M',
         'caf81': 'F',
         'caf82': 'M',
-        'caf84':'F',
+        'caf84': 'F',
         'caf88': 'M',
         'caf89': 'M',
         'caf90': 'M',
@@ -372,6 +382,11 @@ def get_sex(animal):
         'caf101': 'F',
         'caf102': 'M',
         'caf103': 'F',
+        'caf104': 'F',
+        'caf106': 'F',
+        'caf107': 'M',
+        'caf108': 'F',
+        'caf109': 'F',
         'eab52': 'F',
         'eab47': 'M',
         'eab': 'M',
@@ -418,1120 +433,1125 @@ def get_params(animal, probe = None):
     # if you need to return to these, they're here, don't delete
     keep_these_params = {
         'caf22': {
-                    'nfactor_bm': 5,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':8,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 5,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 8,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf26': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf34': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf37': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.9,
-                    'nfactor_tm_tail':0.9,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.9,
+            'nfactor_tm_tail': 0.9,
+            'quals': [1, 2]
+        },
         'caf40': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf42': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 10,
-                    'tm':8,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 10,
+            'tm': 8,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf48': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf49': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.78,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.78,
+            'quals': [1, 2]
+        },
         'caf50': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf52': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':8,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 8,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf58': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf60': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':15,
-                    'nfactor_bm_tail':0.85,
-                    'nfactor_tm_tail':0.85,
-                    'quals': [1]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 15,
+            'nfactor_bm_tail': 0.85,
+            'nfactor_tm_tail': 0.85,
+            'quals': [1]
+        },
         'caf61': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':20,
-                    'nfactor_bm_tail':0.70,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 20,
+            'nfactor_bm_tail': 0.70,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf62': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf66': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf69': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf72': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf77': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 15,
-                    'tm':8,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 15,
+            'tm': 8,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf78': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf79': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf80': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf81': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':12,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 12,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf82': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf84': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf88': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf89': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf90': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf92': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 15,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.9,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 15,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.9,
+            'quals': [1, 2]
+        },
         'caf95': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf96': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 40,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 40,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1]
+        },
         'eab47': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'eab50': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'eab40': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    }
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        }
     }
     harsh_params = {
         'caf22': {
-                    'nfactor_bm': 5,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':8,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 5,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 8,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf26': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.70,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf34': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf37': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 15,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 15,
+            'tm': 10,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf40': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf42': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 10,
-                    'tm':8,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 10,
+            'tm': 8,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf48': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf49': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.78,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.78,
+            'quals': [1, 2]
+        },
         'caf50': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf52': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':8,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 8,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf58': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf60': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 25,
-                    'tm':10,
-                    'nfactor_bm_tail':0.70,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 25,
+            'tm': 10,
+            'nfactor_bm_tail': 0.70,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1]
+        },
         'caf61': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':20,
-                    'nfactor_bm_tail':0.70,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 20,
+            'nfactor_bm_tail': 0.70,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf62': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf66': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf69': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf72': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf77': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 15,
-                    'tm':8,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 8,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf78': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf79': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf80': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf81': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':12,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 15,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf82': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf84': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf88': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf89': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.7,
+            'nfactor_tm_tail': 0.7,
+            'quals': [1, 2]
+        },
         'caf90': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf92': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 15,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.9,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 15,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.9,
+            'quals': [1, 2]
+        },
         'caf95': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf96': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1]
+        },
         'eab47': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'eab50': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'eab40': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    }
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        }
     }
 
     if len(animal) > 6:
         animal = animal[:3].lower() + str(int(animal[3:]))
-    
+
     base = {
         'nfactor_bm': 0,
-        'nfactor_tm':0,
+        'nfactor_tm': 0,
         'bm': 50,
-        'tm':20,
-        'nfactor_bm_tail':0.8,
-        'nfactor_tm_tail':0.8,
-        'quals': [1,2]
+        'tm': 20,
+        'nfactor_bm_tail': 0.8,
+        'nfactor_tm_tail': 0.8,
+        'quals': [1, 2]
     }
-    # 
+    #
     params = {
         'caf22': {
-                    'nfactor_bm': 5,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':8,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 5,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 8,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf26': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 15,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 15,
+            'tm': 10,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf34': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':6,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 12,
+            'tm': 6,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf37': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.9,
-                    'nfactor_tm_tail':0.9,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.9,
+            'nfactor_tm_tail': 0.9,
+            'quals': [1, 2]
+        },
         'caf40': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf42': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 10,
-                    'tm':9,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 10,
+            'tm': 9,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf48': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf49': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.78,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.78,
+            'quals': [1, 2]
+        },
         'caf50': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':15,
-                    'nfactor_bm_tail':0.85,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 15,
+            'nfactor_bm_tail': 0.85,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf52': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':8,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 8,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf58': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf60': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 40,
-                    'tm':15,
-                    'nfactor_bm_tail':0.9,
-                    'nfactor_tm_tail':0.9,
-                    'quals': [1]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 40,
+            'tm': 15,
+            'nfactor_bm_tail': 0.9,
+            'nfactor_tm_tail': 0.9,
+            'quals': [1]
+        },
         'caf61': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':20,
-                    'nfactor_bm_tail':0.65,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 20,
+            'nfactor_bm_tail': 0.65,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf62': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':1,
-                    'nfactor_tm_tail':1,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 1,
+            'nfactor_tm_tail': 1,
+            'quals': [1, 2]
+        },
         'caf66': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf69': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf72': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf77': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 15,
-                    'tm':8,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 15,
+            'tm': 8,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf78': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf79': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf80': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 40,
-                    'tm':10,
-                    'nfactor_bm_tail':0.9,
-                    'nfactor_tm_tail':0.9,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 40,
+            'tm': 10,
+            'nfactor_bm_tail': 0.9,
+            'nfactor_tm_tail': 0.9,
+            'quals': [1, 2]
+        },
         'caf81': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':12,
-                    'nfactor_bm_tail':0.75,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 12,
+            'nfactor_bm_tail': 0.75,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf82': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf84': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.75,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.75,
+            'quals': [1, 2]
+        },
         'caf88': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf89': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':10,
-                    'nfactor_bm_tail':0.7,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.7,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'caf90': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 20,
-                    'tm':15,
-                    'nfactor_bm_tail':0.9,
-                    'nfactor_tm_tail':0.9,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 20,
+            'tm': 15,
+            'nfactor_bm_tail': 0.9,
+            'nfactor_tm_tail': 0.9,
+            'quals': [1, 2]
+        },
         'caf92': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 15,
-                    'tm':9,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.85,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 10,
+            'tm': 9,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.85,
+            'quals': [1, 2]
+        },
         'caf95': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 35,
-                    'tm':10,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 10,
+            'nfactor_bm_tail': 0.85,
+            'nfactor_tm_tail': 0.85,
+            'quals': [1, 2]
+        },
         'caf96': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1]
+        },
         'caf97': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
+        'caf100': {
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 15,
+            'tm': 10,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8
+        },
         'eab47': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 30,
-                    'tm':15,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 30,
+            'tm': 15,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'eab50': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    },
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        },
         'eab40': {
-                    'nfactor_bm': 0,
-                    'nfactor_tm':0,
-                    'bm': 50,
-                    'tm':20,
-                    'nfactor_bm_tail':0.8,
-                    'nfactor_tm_tail':0.8,
-                    'quals': [1,2]
-                    }
+            'nfactor_bm': 0,
+            'nfactor_tm': 0,
+            'bm': 50,
+            'tm': 20,
+            'nfactor_bm_tail': 0.8,
+            'nfactor_tm_tail': 0.8,
+            'quals': [1, 2]
+        }
     }
 
     probe_params = {
         'caf71': {
             'V1': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 30,
-                'tm':10,
-                'nfactor_bm_tail':0.85,
-                'nfactor_tm_tail':0.85,
-                'quals': [1,2]
+                'tm': 10,
+                'nfactor_bm_tail': 0.85,
+                'nfactor_tm_tail': 0.85,
+                'quals': [1, 2]
             },
             'RSPv': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 50,
-                'tm':20,
-                'nfactor_bm_tail':0.8,
-                'nfactor_tm_tail':0.8,
-                'quals': [1,2]
+                'tm': 20,
+                'nfactor_bm_tail': 0.8,
+                'nfactor_tm_tail': 0.8,
+                'quals': [1, 2]
             },
             'ACad': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 20,
-                'tm':10,
-                'nfactor_bm_tail':0.8,
-                'nfactor_tm_tail':0.8,
-                'quals': [1,2]
+                'tm': 10,
+                'nfactor_bm_tail': 0.8,
+                'nfactor_tm_tail': 0.8,
+                'quals': [1, 2]
             }
-        }, 
+        },
         'caf73': {
             'ACad': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 50,
-                'tm':20,
-                'nfactor_bm_tail':0.75,
-                'nfactor_tm_tail':0.75,
-                'quals': [1,2]
+                'tm': 20,
+                'nfactor_bm_tail': 0.75,
+                'nfactor_tm_tail': 0.75,
+                'quals': [1, 2]
             },
             'RSPv': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 50,
-                'tm':20,
-                'nfactor_bm_tail':0.75,
-                'nfactor_tm_tail':0.8,
-                'quals': [1,2]
+                'tm': 20,
+                'nfactor_bm_tail': 0.75,
+                'nfactor_tm_tail': 0.8,
+                'quals': [1, 2]
             },
             'CA1': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 30,
-                'tm':15,
-                'nfactor_bm_tail':0.9,
-                'nfactor_tm_tail':0.9,
-                'quals': [1,2]
+                'tm': 15,
+                'nfactor_bm_tail': 0.9,
+                'nfactor_tm_tail': 0.9,
+                'quals': [1, 2]
             }
         },
         'caf74': {
             'ACad': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 40,
-                'tm':15,
-                'nfactor_bm_tail':0.75,
-                'nfactor_tm_tail':0.75,
-                'quals': [1,2]
+                'tm': 15,
+                'nfactor_bm_tail': 0.75,
+                'nfactor_tm_tail': 0.75,
+                'quals': [1, 2]
             },
             'RSPv': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 50,
-                'tm':20,
-                'nfactor_bm_tail':0.75,
-                'nfactor_tm_tail':0.75,
-                'quals': [1,2]
+                'tm': 20,
+                'nfactor_bm_tail': 0.75,
+                'nfactor_tm_tail': 0.75,
+                'quals': [1, 2]
             },
             'CA1': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 30,
-                'tm':15,
-                'nfactor_bm_tail':0.8,
-                'nfactor_tm_tail':0.8,
-                'quals': [1,2]
+                'tm': 15,
+                'nfactor_bm_tail': 0.8,
+                'nfactor_tm_tail': 0.8,
+                'quals': [1, 2]
             }
         },
         'caf75': {
             'V1': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 30,
-                'tm':15,
-                'nfactor_bm_tail':0.75,
-                'nfactor_tm_tail':0.75,
-                'quals': [1,2]
+                'tm': 15,
+                'nfactor_bm_tail': 0.75,
+                'nfactor_tm_tail': 0.75,
+                'quals': [1, 2]
             },
             'CA1': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 30,
-                'tm':15,
-                'nfactor_bm_tail':0.8,
-                'nfactor_tm_tail':0.8,
-                'quals': [1,2]
+                'tm': 15,
+                'nfactor_bm_tail': 0.8,
+                'nfactor_tm_tail': 0.8,
+                'quals': [1, 2]
             }
         },
         'caf69': {
             'ACad': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 30,
-                'tm':15,
-                'nfactor_bm_tail':0.8,
-                'nfactor_tm_tail':0.8,
-                'quals': [1,2]
+                'tm': 15,
+                'nfactor_bm_tail': 0.8,
+                'nfactor_tm_tail': 0.8,
+                'quals': [1, 2]
             },
             'RSPv': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 20,
-                'tm':15,
-                'nfactor_bm_tail':0.75,
-                'nfactor_tm_tail':0.75,
-                'quals': [1,2]
+                'tm': 15,
+                'nfactor_bm_tail': 0.75,
+                'nfactor_tm_tail': 0.75,
+                'quals': [1, 2]
             }
         },
         'caf81': {
             'V1': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 30,
-                'tm':15,
-                'nfactor_bm_tail':0.75,
-                'nfactor_tm_tail':0.75,
-                'quals': [1,2]
+                'tm': 15,
+                'nfactor_bm_tail': 0.75,
+                'nfactor_tm_tail': 0.75,
+                'quals': [1, 2]
             }
         },
         'caf82': {
             'ACad': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 30,
-                'tm':20,
-                'nfactor_bm_tail':0.8,
-                'nfactor_tm_tail':0.8,
-                'quals': [1,2]
+                'tm': 20,
+                'nfactor_bm_tail': 0.8,
+                'nfactor_tm_tail': 0.8,
+                'quals': [1, 2]
             }
         },
         'caf88': {
             'V1': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 50,
-                'tm':15,
-                'nfactor_bm_tail':0.8,
-                'nfactor_tm_tail':0.8,
-                'quals': [1,2]
+                'tm': 15,
+                'nfactor_bm_tail': 0.8,
+                'nfactor_tm_tail': 0.8,
+                'quals': [1, 2]
             },
             'ACad': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 50,
-                'tm':20,
-                'nfactor_bm_tail':0.75,
-                'nfactor_tm_tail':0.75,
-                'quals': [1,2]
+                'tm': 20,
+                'nfactor_bm_tail': 0.75,
+                'nfactor_tm_tail': 0.75,
+                'quals': [1, 2]
             },
             'RSPv': {
                 'nfactor_bm': 0,
-                'nfactor_tm':0,
+                'nfactor_tm': 0,
                 'bm': 30,
-                'tm':15,
-                'nfactor_bm_tail':0.8,
-                'nfactor_tm_tail':0.8,
-                'quals': [1,2]
+                'tm': 15,
+                'nfactor_bm_tail': 0.8,
+                'nfactor_tm_tail': 0.8,
+                'quals': [1, 2]
             }
         }
     }
 
-    if probe is None:
-        region = ''
-    else:
-        region = get_regions(animal)[int(probe[-1])-1]
+    region = get_regions(animal)[int(probe[-1]) - 1]
 
-    #pref the probe params
+    # pref the probe params
     if animal in probe_params.keys():
         if region in probe_params[animal].keys():
             return probe_params[animal][region]
 
     # if no probe params but normal params return those
-    if animal in params.keys():
+    if animal in harsh_params.keys():
         return params[animal]
-    
+
     # otherwise base params it is, thank you for visiting
     return base
     
@@ -1574,7 +1594,7 @@ def get_genotype(animal):
         'caf80': 'te4',
         'caf81': 'wt',
         'caf82': 'wt',
-        'caf84':'te4',
+        'caf84': 'te4',
         'caf88': 'wt',
         'caf89': 'wt',
         'caf90': 'wt',
@@ -1588,6 +1608,12 @@ def get_genotype(animal):
         'caf100': 'e4',
         'caf101': 'e4',
         'caf102': 'wt',
+        'caf103': 'e4',
+        'caf104': 'wt',
+        'caf106': 'wt',
+        'caf107': 'wt',
+        'caf108': 'e4',
+        'caf109': 'e4',
         'eab52': 'te4',
         'eab47': 'te4',
         'eab': 'te4',
@@ -1600,15 +1626,15 @@ def get_genotype(animal):
 def get_hstype(animal):
     if len(animal) > 6:
         animal = animal[:3].lower() + str(int(animal[3:]))
-    regions = {
+    hstype = {
         'caf01': ['EAB50chmap_00'],
         'caf19': ['EAB50chmap_00'],
-        'caf22': ['EAB50chmap_00','EAB50chmap_00'],
-        'caf26': ['EAB50chmap_00','APT_PCB','APT_PCB'],
-        'caf34': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
+        'caf22': ['EAB50chmap_00', 'EAB50chmap_00'],
+        'caf26': ['EAB50chmap_00', 'APT_PCB', 'APT_PCB'],
+        'caf34': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
         'caf37': ['APT_PCB'],
         'caf40': ['APT_PCB'],
-        'caf42': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
+        'caf42': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
         'caf48': ['hs64'],
         'caf49': ['hs64'],
         'caf50': ['hs64'],
@@ -1616,20 +1642,20 @@ def get_hstype(animal):
         'caf60': ['APT_PCB'],
         'caf61': ['hs64'],
         'caf62': ['hs64'],
-        'caf69': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
-        'caf71': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
+        'caf69': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
+        'caf71': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
         'caf72': ['hs64'],
-        'caf73': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
-        'caf74': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
-        'caf75': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
-        'caf77': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
+        'caf73': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
+        'caf74': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
+        'caf75': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
+        'caf77': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
         'caf78': ['hs64'],
         'caf79': ['hs64'],
         'caf80': ['hs64'],
-        'caf81': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
-        'caf82': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
-        'caf84':['hs64'],
-        'caf88': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
+        'caf81': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
+        'caf82': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
+        'caf84': ['hs64'],
+        'caf88': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
         'caf89': ['hs64'],
         'caf90': ['hs64'],
         'caf91': ['hs64'],
@@ -1638,16 +1664,21 @@ def get_hstype(animal):
         'caf95': ['hs64'],
         'caf96': ['hs64'],
         'caf97': ['APT_PCB'],
-        'caf99': ['APT_PCB','APT_PCB','APT_PCB','APT_PCB','APT_PCB','APT_PCB','APT_PCB','APT_PCB'],
+        'caf99': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
         'caf100': ['hs64'],
         'caf101': ['hs64'],
         'caf102': ['hs64'],
         'caf103': ['hs64'],
-        'eab52': ['EAB50champ_00','EAB50champ_00'],
-        'eab47': ['EAB50champ_00','EAB50champ_00','EAB50champ_00'],
-        'eab50': ['EAB50champ_00','EAB50champ_00','EAB50champ_00','EAB50champ_00','EAB50champ_00','EAB50champ_00','EAB50champ_00','EAB50champ_00'],
+        'caf104': ['hs64'],
+        'caf106': ['APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB', 'APT_PCB'],
+        'caf107': ['hs64'],
+        'caf108': ['hs64'],
+        'caf109': ['hs64'],
+        'eab52': ['EAB50chmap_00', 'EAB50chmap_00'],
+        'eab47': ['EAB50chmap_00', 'EAB50chmap_00', 'EAB50chmap_00'],
+        'eab50': ['EAB50chmap_00', 'EAB50chmap_00', 'EAB50chmap_00', 'EAB50chmap_00', 'EAB50chmap_00', 'EAB50chmap_00', 'EAB50chmap_00', 'EAB50chmap_00'],
     }
-    return regions[animal]
+    return hstype[animal]
 
 def load_crit(path):
     '''
@@ -1685,35 +1716,40 @@ def gen_timeline():
 
     If you think it's not working, make sure the list of locations is up to date and there isn't a subfolder that needs to be checked. 
     '''
-    locs = ['bs001r/rawdata/', 'bs002r', 'bs003r', 'bs004r', 'bs005r', 'bs006r', 'bs007r', 'bs003r/D1/','bs003r/D1_442b/', 'bs004r/D1/', 'bs005r/D1/', 'bs006r/D1/', 'bs007r/D1/', 'bs007r/D1_442b/', 'bs007r/D1_442a/']
+    locs = ['bs001r/rawdata/', 'bs002r', 'bs003r', 'bs004r', 'bs005r', 'bs006r', 'bs007r']
+    locs_sub = ['','D1', 'D1_442b', 'D1_442a']
     dat = {}
     for loc in locs:
-        print(loc)
-        restarts = glob.glob(f'/media/{loc}/*/')
-        for folder in restarts:
-            animal_pattern = '((caf|eab|CAF|EAB)\d{2,})'
-            matches = re.findall(animal_pattern, folder)
-            if len(matches) > 0:
-                animal = matches[0][0]
-                animal_clean = animal[:3].lower() + str(int(animal[3:]))
-                try:
-                    g = get_genotype(animal_clean)
-                except KeyError:
-                    print(f'dont have records for {animal_clean} ---- skipping')
-                    g=None
-                    pass
+        for l in locs_sub:
+            print(f'/media/{loc}/{l}/')
+            restarts = glob.glob(f'/media/{loc}/{l}/*/')
+            if len(restarts) == 0:
+                print('----- Not a folder')
+            for folder in restarts:
+                animal_pattern = '((caf|eab|CAF|EAB)\d{2,})'
+                matches = re.findall(animal_pattern, folder)
+                g = None
+                if len(matches) > 0:
+                    animal = matches[0][0]
+                    animal_clean = animal[:3].lower() + str(int(animal[3:]))
+                    try:
+                        g = get_genotype(animal_clean)
+                    except KeyError:
+                        print(f'dont have records for {animal_clean} ---- skipping')
+                        pass
                 if g in ['te4', 'wt', 'e4']:
                     if 'D1' in folder:
-                        files = sorted(glob.glob(folder+'*.bin'))
+                        files = sorted(glob.glob(folder+'Headstage*.bin'))
                     else:
-                        files = sorted(glob.glob(folder+'*/*.bin'))
+                        files = sorted(glob.glob(folder+'*/Headstage*.bin'))
                     if len(files) > 0:
+                        print(f'looking in: {folder} for {animal}')
                         f1 = files[0]
                         f2 = files[-1]
                         d1 = f1[-23:f1.find('.bin')]
                         d2 = f2[-23:f2.find('.bin')]
                         d1 = dt.strptime(d1, '%Y-%m-%d_%H-%M-%S')
-                        d2 = dt.strptime(d2, '%Y-%m-%d_%H-%M-%S') 
+                        d2 = dt.strptime(d2, '%Y-%m-%d_%H-%M-%S')
                         if animal_clean not in dat.keys():
                             print(f'adding {animal_clean}')
                             dat[animal_clean] = {'min':d1, 'max':d2, 'geno':g}
@@ -1772,112 +1808,6 @@ def get_info_from_path(path):
 
     return animal_clean, date, time_frame, probe
 
-
-def construct_fr_df(paths):
-    '''
-    **** deprecated **** dont use
-    but if you need to canabalize some code - go for it
-    '''
-    bdays = {
-        'caf01': dt(2019, 12, 24, 7, 30),
-        'caf19': dt(2020, 1, 19, 7, 30),
-        'caf22': dt(2020, 2, 17, 7, 30),
-        'caf26': dt(2020, 2, 20, 7, 30),
-        'caf34': dt(2020, 3, 18, 7, 30),
-        'caf37': dt(2019, 8, 18, 7, 30),
-        'caf40': dt(2020, 2, 20, 7, 30),
-        'caf42': dt(2020, 2, 20, 7, 30),
-        'caf48': dt(2020, 7, 20, 7, 30),
-        'caf49': dt(2020, 7, 20, 7, 30),
-        'caf50': dt(2020, 7, 20, 7, 30),
-        'caf52': dt(2020, 4, 19, 7, 30),
-        'caf54': dt(2020, 7, 11, 7, 30),
-        'caf55': dt(2020, 7, 11, 7, 30),
-        'caf58': dt(2020, 9, 23, 7, 30),
-        'caf60': dt(2020, 9, 23, 7, 30),
-        'caf61': dt(2019, 12, 11, 7, 30),
-        'caf62': dt(2019, 11, 18, 7, 30),
-        'eab52': dt(2019, 4, 19, 7, 30),
-        'eab47': dt(2019, 2, 17, 7, 30),
-        'eab': dt(2019, 2, 17, 7, 30),
-        'eab50': dt(2019, 2, 15, 7, 30),
-        'eab40': dt(2018, 12, 5, 7, 30)
-    }
-    seconds_in_day = 60 * 60 * 24
-    with open('/media/HlabShare/clayton_sahara_work/criticality/cell_stats.csv', 'w', newline = '') as c:
-        w = csv.DictWriter(c, fieldnames = ['animal', 'rstart_time', 'age_start', 'days_old', 'hours_old', 'cell_idx', 'quality', 'fr', 'cv', 'wf'])
-        w.writeheader()
-
-    done = []
-    final = []
-    for i, p in enumerate(paths):
-        print(i)
-        path_info = p[:p.find('_perc')]
-        if path_info in done:
-            print('already done')
-        else:
-            done.append(path_info)
-            crit = None
-            try:
-                crit = np.load(p, allow_pickle = True)[0]
-                birth = bdays[crit.animal]
-                for cell in crit.cells:
-                    start_time = crit.cells[0].rstart_time
-                    start_time = dt.strptime(start_time, '%Y-%m-%d_%H-%M-%S')
-                    age = start_time - birth
-
-                    fr, cv = get_cell_stats(cell)
-
-                    for i in range(len(fr)):
-                        age_now = age + timedelta(hours = i)
-                        days_old = age_now.total_seconds() / seconds_in_day
-                        hours_old = age_now.total_seconds() / 3600
-
-                        with open('/media/HlabShare/clayton_sahara_work/criticality/cell_stats.csv', 'a', newline = '') as c:
-                            w = csv.DictWriter(c, fieldnames = ['animal', 'rstart_time', 'age_start', 'days_old', 'hours_old', 'cell_idx', 'quality', 'fr', 'cv', 'wf'])
-
-                            d = {
-                                'animal': crit.animal,
-                                'rstart_time': start_time,
-                                'age_start': age_now,
-                                'days_old': days_old,
-                                'hours_old': hours_old,
-                                'cell_idx': cell.clust_idx,
-                                'quality': cell.quality,
-                                'fr': fr[i],
-                                'cv': cv[i],
-                                'wf': cell.waveform
-                            }
-                            w.writerow(d)
-            except Exception:
-                print('This object is final or weird. Go back and find these cells individually to add to the csv')
-                final.append(p)
-    np.save('/media/HlabShare/clayton_sahara_work/fr_csv_done.npy', done)
-    np.save('/media/HlabShare/clayton_sahara_work/fr_csv_FINAL.npy', final)
-
-
-    if obj.final:
-        print('This crit object is final, there are no cells saved here. If youd like to rerun this block start from lilo_and_stitch')
-        return
-    total_time = __get_totaltime(obj.time_frame)
-    num_bins = int(total_time / obj.hour_bins)
-    bin_len = int((obj.hour_bins * 3600) / obj.ava_binsize)
-    good_cells = [cell for cell in obj.cells if cell.quality in obj.qualities and cell.cell_type in obj.cell_types]
-    spikewords = mbt.n_spiketimes_to_spikewords(good_cells, binsz = obj.ava_binsize, binarize = 1)
-    idx = obj.block_num
-    if idx == num_bins - 1:
-        data = spikewords[:, (idx * bin_len):]
-    else:
-        data = spikewords[:, (idx * bin_len): ((idx + 1) * bin_len)]
-    obj.spikewords = data
-    param_str = __get_paramstr(obj.animal, obj.probe, obj.date, obj.time_frame, obj.hour_bins, obj.perc, obj.ava_binsize, obj.qualities, obj.cell_types, idx)
-    obj.pltname = param_str
-    obj.run_crit(flag = flag)
-    print(f'BLOCK RESULTS: P_vals - {obj.p_value_burst}   {obj.p_value_t} \n DCC: {obj.dcc}')
-    if save:
-        to_save = np.array([obj])
-        np.save(f'{obj.saveloc}Crit_{param_str}', to_save)
-    return obj
 
 def get_age_sec(start_time, birthday):
     '''
