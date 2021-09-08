@@ -218,7 +218,7 @@ def AV_analysis(burst, T, flag = 1, bm = 20, tm = 10, nfactor_bm=0, nfactor_tm=0
             hax_time.axes[0].set_xlabel('Duration (D)', fontsize=16)
             hax_time.axes[0].set_ylabel('Prob(size < D)', fontsize=16)
             # hax_time.savefig(saveloc + "/" + pltname + 'pvalue_time' +  '.svg', format='svg')
-            savefigpathb = op.join(saveloc, pltname + 'pvalue_time' + '.svg')
+            savefigpatht = op.join(saveloc, pltname + 'pvalue_time' + '.svg')
             print("savefigpatht ", savefigpatht)
             hax_burst.savefig(savefigpatht, format='svg')
             Result['burst_cdf'] = hax_burst
