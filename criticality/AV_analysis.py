@@ -3,6 +3,7 @@ from criticality import pvaluenew2 as pv
 from criticality import exclude as ex
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os.path as op
 
 
 def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
@@ -83,7 +84,10 @@ def scaling_plots(Result, burst, burstMin, burstMax, alpha, T, tMin, tMax,
 
     plt.tight_layout()
     plt.legend()
-    plt.savefig(saveloc + "/" + pltname + 'scaling_relations' + '.svg', format='svg')
+    # plt.savefig(saveloc + "/" + pltname + 'scaling_relations' + '.svg', format='svg')
+    savefigpath = op.join(saveloc , pltname + 'scaling_relations' + '.svg')
+    print("savefigpath " savefigpath)
+    plt.savefig(savefigpath, format='svg')
 
     return fig1
 
@@ -206,11 +210,17 @@ def AV_analysis(burst, T, flag = 1, bm = 20, tm = 10, nfactor_bm=0, nfactor_tm=0
         if flag == 2 and not Result['EX_t'] and not Result['EX_b']:
             hax_burst.axes[0].set_xlabel('Size (S)', fontsize=16)
             hax_burst.axes[0].set_ylabel('Prob(size < S)', fontsize=16)
-            hax_burst.savefig(saveloc + "/" + pltname + 'pvalue_burst' + '.svg', format='svg')
+            # hax_burst.savefig(saveloc + "/" + pltname + 'pvalue_burst' + '.svg', format='svg')
+            savefigpathb = op.join(saveloc,  pltname + 'pvalue_burst' + '.svg')
+            print("savefigpathb " savefigpathb)
+            hax_burst.savefig(savefigpathb, format='svg')
 
             hax_time.axes[0].set_xlabel('Duration (D)', fontsize=16)
             hax_time.axes[0].set_ylabel('Prob(size < D)', fontsize=16)
-            hax_time.savefig(saveloc + "/" + pltname + 'pvalue_time' +  '.svg', format='svg')
+            # hax_time.savefig(saveloc + "/" + pltname + 'pvalue_time' +  '.svg', format='svg')
+            savefigpathb = op.join(saveloc, pltname + 'pvalue_time' + '.svg')
+            print("savefigpatht " savefigpatht)
+            hax_burst.savefig(savefigpatht, format='svg')
             Result['burst_cdf'] = hax_burst
             Result['time_cdf'] = hax_time
         Result['scaling_relation_plot'] = fig1
