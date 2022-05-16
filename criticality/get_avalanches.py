@@ -159,7 +159,7 @@ def get_avalanches(data, perc=0.25, ncells=-1):
     # print("bustaft calc took time {} seconds".format(toc-tic))
 
     ttoc = time.time()
-    print("Time took in get_avalanches is {} seconds".format(ttoc-ttic),
+    print("Time took in get_avalanches is {:.2f} seconds".format(ttoc-ttic),
           flush=True)
 
     # # print variable and sizes
