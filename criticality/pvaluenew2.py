@@ -68,7 +68,7 @@ def pvaluenew(burst, alpha, xmin, nfactor=0,
         # print("2 syn_data", syn_data, " xmin ", xmin)
         # calculate exponent for surrogated data
         alpha_syn, xmin_syn, ks_syn, Loglike_syn = tp.tplfit(syn_data, xmin,
-                                                             nfactor=nfactor)
+                                                             nfactor=0)
         a = alpha_syn[0]
 
         if ((np.abs(a-alpha) <= 0.1) and (a > 1.0)):
