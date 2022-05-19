@@ -1,7 +1,9 @@
 # Criticality
-```
+---
 This version is under debugging and testing, please do not use as production code.
-```
+
+---
+![Tests](https://github.com/hengenlab/criticality_hlab/actions/workflows/pytests.yml/badge.svg)
 
 ## Installation
 
