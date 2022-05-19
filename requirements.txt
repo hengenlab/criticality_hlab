@@ -1,0 +1,8 @@
+ipython
+numpy
+matplotlib
+seaborn
+pandas
+scipy
+sklearn
+powerlaw
