@@ -13,7 +13,8 @@ class Testtplfit_new(unittest.TestCase):
     alpha_list = [2.0, 2.1, 2.1, 2.2, 2.0, 2.5]
     N_list = [20000, 10000, 30000, 40000, 20000, 20000]
 
-    def test_tplfit_xmin(self, xmin=10, xmax=500, alpha=2.5, N=10000):
+    def generate_dist(self, xmin=10, xmax=500, alpha=2.5, N=10000):
+        # print("xmin ", xmin)
         count = 0
         np.random.seed(42)
         while True:
@@ -34,14 +35,14 @@ class Testtplfit_new(unittest.TestCase):
         test_output = None
         test_output = []
         for indx, xmin in enumerate(self.xmin_list):
-            test_output.append(self.test_tplfit_xmin(xmin=xmin,
-                                                     xmax=self.xmax_list[indx],
-                                                     alpha=self.alpha_list
-                                                     [indx],
-                                                     N=self.N_list[indx]))
+            test_output.append(self.generate_dist(xmin=xmin,
+                                                  xmax=self.xmax_list[indx],
+                                                  alpha=self.alpha_list
+                                                  [indx],
+                                                  N=self.N_list[indx]))
         msg = "tfpfilt failed"
         for indx, xmin in enumerate(self.xmin_list):
-            # print("xmin ", xmin, " test_output[indx] ", test_output[indx])
+            print("xmin ", xmin, " test_output[indx] ", test_output[indx])
             unittest.TestCase.assertAlmostEqual(self, xmin,
                                                 test_output[indx],
                                                 delta=1,
