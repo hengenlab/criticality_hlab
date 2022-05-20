@@ -1,6 +1,8 @@
 import unittest
 import numpy as np
 import criticality as cr
+import os.path as op
+import os
 
 
 class TestAV_analysis(unittest.TestCase):
