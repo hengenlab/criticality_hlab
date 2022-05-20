@@ -15,8 +15,8 @@ class TestAV_analysis(unittest.TestCase):
     def test_AV_analysis(self):
 
         print(os.getcwd())
-        if op.exists('/home/runner/work/criticality_hlab/criticality/tests/'):
-            os.chdir('/home/runner/work/criticality_hlab/criticality/tests/')
+        if op.exists('/home/runner/work/criticality_hlab/criticality_hlab/tests/'):
+            os.chdir('/home/runner/work/criticality_hlab/criticality_hlab/tests/')
 
         # load data
         data = np.load('sample_data.npy')
