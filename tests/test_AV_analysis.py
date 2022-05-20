@@ -12,6 +12,9 @@ class TestAV_analysis(unittest.TestCase):
 
     def test_AV_analysis(self):
 
+        if op.exists('/home/runner/work/criticality_hlab/criticality/tests/'):
+            os.chdir('/home/runner/work/criticality_hlab/criticality/tests/')
+
         # load data
         data = np.load('data/sample_data.npy')
         perc = 0.25
