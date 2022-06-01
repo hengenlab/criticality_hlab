@@ -111,7 +111,8 @@ def get_avalanches(data, perc=0.25, ncells=-1):
     Result = {
         'S': np.asarray(burst),
         'T': T,
-        'loc': location
+        'loc': location,
+        'perc_threshold': perc_threshold
     }
 
     ttoc = time.time()
