@@ -39,7 +39,7 @@ class TestAV_analysis(unittest.TestCase):
 
         test_df = Result['df']
         msg = "DCC check"
-        self.assertEqual(self.expected_df,
+        self.assertAlmostEqual(self.expected_df,
                          test_df, msg)
 
         test_P_burst = Result['P_burst']
