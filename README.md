@@ -84,6 +84,8 @@ params = {'flag': 1, 'bm': 10, 'tm': 2, 'pltname': "testmodel",
           'plot_shuffled': False, 'plot': True}
 
 # run the code
+Result = None
+Result = {}
 Result = cr.AV_analysis(burst, T, params, nfactor_bm=4, nfactor_tm=1,
                         nfactor_bm_tail=0.9, nfactor_tm_tail=1.0,
                         none_fact=10, max_time=600)
@@ -142,6 +144,8 @@ params = {'flag': 1, 'bm': 10, 'tm': 2, 'pltname': "testmodel",
           'plot_shuffled': False, 'plot': True}
 
 # run the code
+Result = None
+Result = {}
 Result = cr.AV_analysis(burst, T, params, nfactor_bm=4, nfactor_tm=1,
                         nfactor_bm_tail=0.9, nfactor_tm_tail=1.0,
                         none_fact=10, max_time=600)
