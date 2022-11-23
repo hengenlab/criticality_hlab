@@ -29,7 +29,9 @@ class TestAV_analysis(unittest.TestCase):
         # get av_size and av_duration
         av_size = r['S']
         av_duration = r['T']
-
+        
+        Result = None
+        Result = {}
         Result = cr.AV_analysis(av_size, av_duration, flag=flag,
                                 plot=True,
                                 pltname='',
