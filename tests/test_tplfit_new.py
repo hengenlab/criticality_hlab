@@ -43,7 +43,6 @@ class Testtplfit_new(unittest.TestCase):
         msg = "tfpfilt failed"
         for indx, xmin in enumerate(self.xmin_list):
             print("xmin ", xmin, " test_output[indx] ", test_output[indx])
-            unittest.TestCase.assertAlmostEqual(self, xmin,
-                                                test_output[indx],
-                                                delta=1,
-                                                msg=msg + str(xmin))
+            self.assertAlmostEqual(xmin, test_output[indx],
+                                   msg=msg + str(xmin),
+                                   delta=1)
