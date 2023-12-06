@@ -4,7 +4,7 @@ import time
 # import sys
 
 
-def get_avalanches(data, perc=0.25, ncells=-1):
+def get_avalanches(data, perc=0.25, ncells=-1, const_threshold=None):
 
     '''
     Function that goes through an array of binned spikes and determines
@@ -12,11 +12,21 @@ def get_avalanches(data, perc=0.25, ncells=-1):
 
     parameters:
         data - array of spike times. one row for each neuron
+
         perc - threshold for defining an avalanche,
             if network is dominated by silent periods you can use 0
+            if const_threshold is used perc will be ignored
+
         ncells - default (-1), number of cells calculated from data shape
                  if ncells given expect data to be 1 dimensional
                  np.nansum(data, axis=0)
+
+        const_threshold - Define avalanche threshold directly instead of perc
+
+                         default (None), use perc to find threshold
+
+                         if const_threshold is not None,
+                            use this value (integer >= 0)
 
     returns:
     Result - a dictionary with 2 inputs.
@@ -47,16 +57,23 @@ def get_avalanches(data, perc=0.25, ncells=-1):
     data = None
     del data
 
-    if perc > 0:
-        sortN = np.sort(network)
-        # determine the treshold. if perc is .25,
-        # then its 25% of network activity essentially
-        perc_threshold = sortN[round(m * perc)]
-        print("perc_threshold ", perc_threshold)
-        sortN = None
-        del sortN
-    else:
-        perc_threshold = 0
+    if const_threshold is None:
+        if perc > 0:
+            sortN = np.sort(network)
+            # determine the treshold. if perc is .25,
+            # then its 25% of network activity essentially
+            perc_threshold = sortN[round(m * perc)]
+            print("perc_threshold ", perc_threshold)
+            sortN = None
+            del sortN
+        else:
+            perc_threshold = 0
+            print("perc_threshold ", perc_threshold)
+    elif const_threshold is not None:
+        if const_threshold < 0:
+            raise ValueError(f'const_threshold < 0, {const_threshold}')
+        print("const_threshold ", const_threshold)
+        perc_threshold = const_threshold
         print("perc_threshold ", perc_threshold)
 
     zdata = cdc(network)
