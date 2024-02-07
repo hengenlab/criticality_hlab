@@ -64,8 +64,8 @@ perc = 0.25
 # it finds all avalanches and create two arrays
 # and put them to a dict : S size, T duration
 r = cr.get_avalanches(data, perc)
-# burst = r['S']
-# T = r['T']
+burst = r['S']
+T = r['T']
 
 # flag 2 = pvalue and dcc, else just dcc
 # bm : None=max calulate inside code, model 10, rawdata 10-20
