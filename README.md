@@ -10,7 +10,6 @@ This version is under debugging and testing, please do not use as production cod
 ### Download Criticality
 ```
 git clone https://github.com/hengenlab/criticality_hlab.git
-Enter your username and password  
 ```
 
 ### Using pip
